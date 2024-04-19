@@ -12,6 +12,7 @@ import Project from './pages/project/Project'
 import Navbar from './components/Navbar'
 import Sidebar from './components/Sidebar'
 import {Toaster} from "react-hot-toast";
+import Orders from "./pages/orders/Orders";
 
 function App() {
   return (
@@ -34,6 +35,9 @@ function App() {
             </Route>
             <Route path="/login">
               <Login />
+            </Route>
+            <Route path="/orders">
+              <Orders/>
             </Route>
             <Route path="/signup">
               <Signup />

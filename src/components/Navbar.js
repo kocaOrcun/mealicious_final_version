@@ -12,8 +12,7 @@ export default function Navbar() {
     <nav className="navbar">
       <ul>
         <li className="logo">
-          <img src={Temple} alt="dojo logo" />
-          <span>Mealicious</span>
+          <span>Mealicious Yönetim Paneli</span>
         </li>
 
         <li><Link to="/login">Login</Link></li>

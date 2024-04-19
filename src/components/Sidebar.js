@@ -11,7 +11,7 @@ export default function Sidebar() {
       <div className="sidebar-content">
         <div className="user">
           {/* avatar & username here later */}
-          <p>Hey user</p>  
+          <p>@Restaurant Adı</p>
         </div>  
         <nav className="links">
           <ul>
@@ -22,9 +22,9 @@ export default function Sidebar() {
               </NavLink>
             </li>
             <li>
-              <NavLink to="/create">
+              <NavLink to="/orders">
                 <img src={AddIcon} alt="add project icon" />
-                <span>New Projectt</span>
+                <span>Ürün Ekleme</span>
               </NavLink>
             </li>
           </ul>
