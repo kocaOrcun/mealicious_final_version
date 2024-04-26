@@ -13,14 +13,25 @@ const useOrders = () => {
 
         // "orders" koleksiyonundan verileri çekme
         const unsubscribe = db.collection('orders').onSnapshot(
-            (snapshot) => {
+            async (snapshot) => {
                 const fetchedOrders = [];
-                snapshot.forEach((doc) => {
+                for (const doc of snapshot.docs) {
+                    const orderData = doc.data();
+                    // Kullanıcının adını ve soyadını users tablosundan çekme
+                    const userSnapshot = await db.collection('users').doc(orderData.userID).get();
+                    const userData = userSnapshot.data();
+
                     fetchedOrders.push({
-                        id: doc.id, ...doc.data(),
-                        status: doc.status, ...doc.data(),
-                        tableNo: doc.tableNo,...doc.data()  });
-                });
+                        id: doc.id,
+                        status: orderData.status,
+                        tableNo: orderData.tableNo,
+                        total: orderData.total,
+                        userID: orderData.userID,
+                        order: orderData.order || [],
+                        userName: userData ? userData.name : '',
+                        userSurname: userData ? userData.surname : '',
+                    });
+                }
                 setOrders(fetchedOrders);
                 setLoading(false);
             },

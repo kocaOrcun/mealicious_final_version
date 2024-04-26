@@ -12,7 +12,7 @@ export default function Navbar() {
     <nav className="navbar">
       <ul>
         <li className="logo">
-          <span>Mealicious Yönetim Paneli</span>
+          <span>Mealicious Management System</span>
         </li>
 
         <li><Link to="/login">Login</Link></li>
