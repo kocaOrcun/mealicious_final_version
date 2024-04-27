@@ -1,3 +1,4 @@
+// useOrders.js
 import { useState, useEffect } from 'react';
 import firebase from 'firebase/app';
 import 'firebase/firestore';
@@ -8,32 +9,32 @@ const useOrders = () => {
     const [error, setError] = useState(null);
 
     useEffect(() => {
-        // Firebase Firestore referansı
         const db = firebase.firestore();
 
-        // "orders" koleksiyonundan verileri çekme
-        const unsubscribe = db.collection('orders').onSnapshot(
+        const unsubscribe = db.collection('restaurant').doc('001').collection('orders').onSnapshot(
             async (snapshot) => {
-                const fetchedOrders = [];
-                for (const doc of snapshot.docs) {
-                    const orderData = doc.data();
-                    // Kullanıcının adını ve soyadını users tablosundan çekme
-                    const userSnapshot = await db.collection('users').doc(orderData.userID).get();
-                    const userData = userSnapshot.data();
-
-                    fetchedOrders.push({
-                        id: doc.id,
-                        status: orderData.status,
-                        tableNo: orderData.tableNo,
-                        total: orderData.total,
-                        userID: orderData.userID,
-                        order: orderData.order || [],
-                        userName: userData ? userData.name : '',
-                        userSurname: userData ? userData.surname : '',
+                try {
+                    const fetchedOrders = [];
+                    snapshot.forEach((doc) => {
+                        const orderData = doc.data();
+                        // Sadece orders array'inin 0 ve 1. indislerini al
+                        const orderItems = orderData.orders.slice(0, 2);
+                        fetchedOrders.push({
+                            id: doc.id,
+                            status: orderData.status,
+                            tableNo: orderData.tableNo,
+                            total: orderData.total,
+                            orders: orderItems,
+                        });
                     });
+                    setOrders(fetchedOrders);
+                    setLoading(false);
+                    setError(null); // Reset error state if successful
+                } catch (err) {
+                    console.error('Error fetching orders: ', err);
+                    setError(err);
+                    setLoading(false);
                 }
-                setOrders(fetchedOrders);
-                setLoading(false);
             },
             (err) => {
                 console.error('Error fetching orders: ', err);
@@ -42,7 +43,6 @@ const useOrders = () => {
             }
         );
 
-        // Component unmount olduğunda listener'ı temizleme
         return () => unsubscribe();
     }, []);
 

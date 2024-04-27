@@ -15,29 +15,37 @@ const Orders = () => {
     return (
         <div>
             <h1>Siparişler</h1>
-            <ul>
+            <table>
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Status</th>
+                    <th>Masa No</th>
+                    <th>Toplam</th>
+                    <th>Sipariş Ürünleri</th>
+                    {/* User bilgileri sorgulanmadığı için, bu alanları eklemiyorum */}
+                </tr>
+                </thead>
+                <tbody>
                 {orders.map((order) => (
-                    <li key={order.id}>
-                        <p>ID: {order.id}</p>
-                        <p>Status: {order.status}</p>
-                        <p>Table No: {order.tableNo}</p>
-                        <p>Total: {order.total}</p>
-                        <p>User ID: {order.userID}</p>
-                        {/* Kullanıcı adı ve soyadını görüntüleme */}
-                        <p>User Name: {order.userName}</p>
-                        <p>User Surname: {order.userSurname}</p>
-                        {/* order array'ini görüntülemek için bir liste ekleyin */}
-                        <p>Order:</p>
-                        <ul>
-                            {order.order.map((item, index) => (
-                                <li key={index}>
-                                    {item.name} - {item.quantity} - {item.notes}
-                                </li>
-                            ))}
-                        </ul>
-                    </li>
+                    <tr key={order.id}>
+                        <td>{order.id}</td>
+                        <td>{order.status}</td>
+                        <td>{order.tableNo}</td>
+                        <td>{order.total}</td>
+                        <td>
+                            <ul>
+                                {order.orders.map((item, index) => (
+                                    <li key={index}>
+                                        {item.name} - {item.quantity} - {item.notes}
+                                    </li>
+                                ))}
+                            </ul>
+                        </td>
+                    </tr>
                 ))}
-            </ul>
+                </tbody>
+            </table>
         </div>
     );
 };
