@@ -3,6 +3,7 @@ TR:
 Projemizin bu kısımında sistem yöneticisinin fonksiyonları tanımlanılacaktır.
 
 -Sistem yöneticisi,  sisteme giriş ve çıkış yapabilecek.
+
 -Sistem yöneticisi, mobil uygulamadan gelen siparişleri görüntüleyebilir.
 
 Kullandığımız teknolojiler
@@ -24,6 +25,7 @@ ENG:
 In this part of our project, the functions of the system administrator will be defined.
 
 -The system administrator will be able to log in and log out of the system.
+
 -The system administrator can view orders coming from the mobile application.
 
 Technologies we use:
