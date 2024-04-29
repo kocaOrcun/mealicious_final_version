@@ -1,12 +1,14 @@
 import { useState, useEffect } from 'react'
 import { projectAuth, projectStorage, projectFirestore } from '../firebase/config'
 import { useAuthContext } from './useAuthContext'
+import {useHistory} from "react-router-dom";
 
 export const useSignup = () => {
   const [isCancelled, setIsCancelled] = useState(false)
   const [error, setError] = useState(null)
   const [isPending, setIsPending] = useState(false)
   const { dispatch } = useAuthContext()
+  const history = useHistory()
 
   const signup = async (email, password, displayName, thumbnail,) => {
     setError(null)
@@ -29,7 +31,7 @@ export const useSignup = () => {
       await res.user.updateProfile({ displayName, photoURL: imgUrl })
 
       // create a user document
-      await projectFirestore.collection('users').doc(res.user.uid).set({ 
+      await projectFirestore.collection('admins').doc(res.user.uid).set({
         online: true,
         displayName,
         photoURL: imgUrl,
@@ -42,6 +44,7 @@ export const useSignup = () => {
         setIsPending(false)
         setError(null)
       }
+      history.push('/login');
     } 
     catch(err) {
       if (!isCancelled) {

@@ -14,9 +14,7 @@ export default function Navbar() {
         <li className="logo">
           <span>Mealicious Management System</span>
         </li>
-
         <li><Link to="/login">Login</Link></li>
-        <li><Link to="/signup">Signup</Link></li>
         <li>
           {!isPending && <button className="btn" onClick={logout}>Logout</button>}
           {isPending && <button className="btn" disabled>Logging out...</button>}

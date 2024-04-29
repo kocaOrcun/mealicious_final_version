@@ -1,3 +1,6 @@
+// Firebase'de bulunan koleksiyon sistemlerinin bağlantılarını yapar. Koleksiyonun içeriğinin
+// okunması için önemlidir.
+
 import { useEffect, useState, useRef } from "react"
 import { projectFirestore } from "../firebase/config"
 

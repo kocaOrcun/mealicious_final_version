@@ -1,0 +1,42 @@
+/* Orders.css */
+.orders-title {
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+
+.orders-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.orders-table th, .orders-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: center; /* Metinleri hücreye ortala */
+}
+
+.orders-table th {
+    background-color: #f2f2f2;
+}
+
+.orders-table tbody tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+.orders-table tbody tr:hover {
+    background-color: #ddd;
+}
+
+.orders-table td ul {
+    margin: 0;
+    padding: 0;
+}
+
+.orders-table td ul li {
+    list-style: none;
+    margin-bottom: 5px;
+}
+
+.orders-table td ul li .quantity {
+    color: red;
+}

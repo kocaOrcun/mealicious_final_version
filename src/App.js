@@ -25,7 +25,7 @@ function App() {
           <Navbar />
           <Switch>
             <Route exact path="/">
-              <Dashboard />
+              <Login />
             </Route>
             <Route path="/create">
               <Create />

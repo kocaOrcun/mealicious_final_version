@@ -17,10 +17,10 @@ const useOrders = () => {
                     const fetchedOrders = [];
                     snapshot.forEach((doc) => {
                         const orderData = doc.data();
-                        // Sadece orders array'inin 0 ve 1. indislerini al
                         const orderItems = orderData.orders.slice(0, 2);
                         fetchedOrders.push({
                             id: doc.id,
+                            user_id : orderData.userId,
                             status: orderData.status,
                             tableNo: orderData.tableNo,
                             total: orderData.total,
