@@ -1,5 +1,6 @@
 
 TR:
+
 Projemizin bu kısımında sistem yöneticisinin fonksiyonları tanımlanılacaktır.
 
 -Sistem yöneticisi,  sisteme giriş ve çıkış yapabilecek.
