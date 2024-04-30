@@ -20,7 +20,6 @@ export const useLogin = () => {
     try {
       // login
       const res = await projectAuth.signInWithEmailAndPassword(email, password)
-
       // update online status
       const documentRef = projectFirestore.collection('admins').doc(res.user.uid)
       await documentRef.update({ online: true })
@@ -31,7 +30,6 @@ export const useLogin = () => {
       if (!isCancelled) {
         setIsPending(false)
         setError(null)
-
         history.push('/orders');
       }
     }
