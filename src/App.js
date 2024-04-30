@@ -25,10 +25,10 @@ function App() {
           <Navbar />
           <Switch>
             <Route exact path="/">
-              <Login />
+              <Dashboard />
             </Route>
             <Route path="/create">
-              <Create />
+              <Login />
             </Route>
             <Route path="/projects/:id">
               <Project />

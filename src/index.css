@@ -6,7 +6,7 @@
   --text-color: #999;
   --primary-color: #031244;
   --highlight-color: #d13267;
-  --bg-color: #f4f4f4;
+  --bg-color: rgba(0, 0, 0, 0);
 }
 
 /* base styles */
