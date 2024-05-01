@@ -1,7 +1,6 @@
 // Uygulama genelinde kimlik doğrulaması yapar
 //Auth context provider Firebase kimlik doğrulama sistemini tetikler
 // useEffect değerler değiştirildiğinde yapılacak işlemleri bildirir state?
-
 import { createContext, useReducer, useEffect } from 'react'
 import { projectAuth } from '../firebase/config'
 
