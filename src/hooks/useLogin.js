@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { projectAuth, projectFirestore } from '../firebase/config'
 import { useAuthContext } from './useAuthContext'
 import {useHistory} from "react-router-dom";
+import toast , {Toaster} from "react-hot-toast";
 
 export const useLogin = () => {
   const [isCancelled, setIsCancelled] = useState(false)
@@ -30,7 +31,7 @@ export const useLogin = () => {
       if (!isCancelled) {
         setIsPending(false)
         setError(null)
-
+        toast.success("Login successful")
         history.push('/orders');
       }
     }
@@ -38,6 +39,7 @@ export const useLogin = () => {
       if (!isCancelled) {
         setError(err.message)
         setIsPending(false)
+        toast.error("Login Failed")
       }
     }
   }
