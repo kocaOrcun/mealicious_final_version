@@ -1,7 +1,7 @@
 // Orders.jsx
 import React, { useState } from 'react';
 import useOrders from '../../hooks/useOrders';
-import './Orders.css'; // CSS dosyasını import et
+import './Orders.css';
 
 const Orders = () => {
     const { orders, loading, error } = useOrders();
