@@ -26,19 +26,6 @@ export default function Sidebar() {
                   <span>Orders</span>
                 </NavLink>
               </li>
-              <li>
-                <NavLink to="#">
-                  <img src={DashboardIcon} alt="Icon"/>
-                  <span>Add Product</span>
-                </NavLink>
-              </li>
-              <li>
-                <NavLink to="#">
-                  <img src={DashboardIcon} alt="Icon"/>
-                  <span>Edit Menu</span>
-                </NavLink>
-              </li>
-
             </ul>
           </nav>
         </div>
