@@ -15,7 +15,6 @@ const useOrders = () => {
     useEffect(() => {
         if (!user) { // Eğer kullanıcı giriş yapmamışsa, siparişleri çekme işlemi gerçekleştirilmez
             setLoading(false);
-            toast.error("You must be logged in to view orders.")
             return;
         }
 
