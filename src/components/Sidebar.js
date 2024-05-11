@@ -1,16 +1,16 @@
-import { NavLink } from "react-router-dom" //
+import { NavLink } from "react-router-dom";
 import { useAuthContext } from "../hooks/useAuthContext";
-// styles & images
-import "./Sidebar.css"
-import DashboardIcon from '../assets/dashboard_icon.svg'
-import AddIcon from '../assets/add_icon.svg'
+import "./Sidebar.css";
+import DashboardIcon from '../assets/dashboard_icon.svg';
+import AddIcon from '../assets/add_icon.svg';
 
 export default function Sidebar() {
+
   return (
       <div className="sidebar">
         <div className="sidebar-content">
           <div className="user">
-            <p>@Restaurant</p>
+            <p>MLC</p> {/* restaurantName değerini göster veya placeholder metin göster */}
           </div>
           <nav className="links">
             <ul>
@@ -25,10 +25,14 @@ export default function Sidebar() {
                   <img src={AddIcon} alt="Icon"/>
                   <span>Orders</span>
                 </NavLink>
+                <NavLink to="/addProduct">
+                  <img src={AddIcon} alt="Icon"/>
+                  <span>Add Product</span>
+                </NavLink>
               </li>
             </ul>
           </nav>
         </div>
       </div>
-  )
+  );
 }

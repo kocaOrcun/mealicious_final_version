@@ -11,6 +11,8 @@ import Navbar from './components/Navbar'
 import Sidebar from './components/Sidebar'
 import {Toaster} from "react-hot-toast";
 import Orders from "./pages/orders/Orders";
+import Menus from "./pages/addProduct/addProduct";
+import AddProduct from "./pages/addProduct/addProduct";
 
 function App() {
   return (
@@ -32,6 +34,9 @@ function App() {
             </Route>
             <Route path="/signup">
               <Signup />
+            </Route>
+            <Route path={"/addProduct"}>
+              <AddProduct/>
             </Route>
           </Switch>
         </div>
