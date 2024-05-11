@@ -1,9 +1,11 @@
 // Orders.jsx
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react'; // useContext'u ekleyin
 import useOrders from '../../hooks/useOrders';
+import { AuthContext } from '../../context/AuthContext'; // AuthContext'i import edin
 import './Orders.css';
 
 const Orders = () => {
+    const { user } = useContext(AuthContext); // AuthContext'ten user değerini alın
     const { orders, loading, error } = useOrders();
     const [selectedOrders, setSelectedOrders] = useState([]); // Seçili siparişleri saklayacak state
 
@@ -15,6 +17,11 @@ const Orders = () => {
             setSelectedOrders([...selectedOrders, orderId]); // Seçili siparişi ekle
         }
     };
+
+    // Kullanıcı giriş yapmamışsa, bir mesaj göster
+    if (!user) {
+        return <div>Kullanıcı giriş yapmadı. Siparişleri görmek için giriş yapmalısınız.</div>;
+    }
 
     if (loading) {
         return <p>Veriler yükleniyor...</p>;
