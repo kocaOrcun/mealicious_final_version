@@ -1,6 +1,8 @@
 /* Orders.css */
 .orders-title {
-    font-size: 24px;
+    font-size: 2em;
+    text-align: center;
+    color: #333;
     margin-bottom: 20px;
 }
 
@@ -9,34 +11,35 @@
     border-collapse: collapse;
 }
 
-.orders-table th, .orders-table td {
+.orders-table th,
+.orders-table td {
     border: 1px solid #ddd;
     padding: 8px;
-    text-align: center; /* Metinleri hücreye ortala */
+    text-align: left;
 }
 
 .orders-table th {
-    background-color: #f2f2f2;
+    background-color: #0939dc;
+    color: white;
 }
 
-.orders-table tbody tr:nth-child(even) {
-    background-color: #f2f2f2;
+button {
+    background-color: #0939dc;
+    color: white;
+    padding: 10px 20px;
+    margin: 10px 0;
+    border: none;
+    cursor: pointer;
+    text-align: center;
+    transition-duration: 0.4s;
 }
 
-.orders-table tbody tr:hover {
-    background-color: #ddd;
+button:hover {
+    background-color: #45a049;
 }
 
-.orders-table td ul {
-    margin: 0;
-    padding: 0;
-}
-
-.orders-table td ul li {
-    list-style: none;
-    margin-bottom: 5px;
-}
-
-.orders-table td ul li .quantity {
-    color: red;
+select {
+    width: 200px;
+    height: 35px;
+    margin-right: 10px;
 }

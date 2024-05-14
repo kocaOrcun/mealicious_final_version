@@ -2,18 +2,17 @@
 import { useState, useEffect, useContext } from 'react';
 import firebase from 'firebase/app';
 import 'firebase/firestore';
-import { AuthContext } from '../context/AuthContext'; // AuthContext'i import edin
-import toast , {Toaster} from "react-hot-toast";
+import { AuthContext } from '../context/AuthContext';
 
 const useOrders = () => {
     const [orders, setOrders] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
-    const { user } = useContext(AuthContext); // AuthContext'ten user değerini alın
+    const { user } = useContext(AuthContext);
 
     useEffect(() => {
-        if (!user) { // Eğer kullanıcı giriş yapmamışsa, siparişleri çekme işlemi gerçekleştirilmez
+        if (!user) {
             setLoading(false);
             return;
         }
@@ -53,7 +52,7 @@ const useOrders = () => {
         );
 
         return () => unsubscribe();
-    }, [user]); // user değiştiğinde useEffect Hook'unu tekrar çalıştır
+    }, [user]);
 
     return { orders, loading, error };
 };

@@ -13,6 +13,8 @@ const Orders = () => {
     const [userNames, setUserNames] = useState({});
     const [filter, setFilter] = useState('all');
     const [orderStatus, setOrderStatus] = useState('');
+    const [updatingStatus, setUpdatingStatus] = useState(false);
+    const [selectAll, setSelectAll] = useState(false);
 
     const handleCheckboxChange = async (orderId) => {
         if (selectedOrders.includes(orderId)) {
@@ -22,14 +24,31 @@ const Orders = () => {
         }
     };
 
-    const handleStatusChange = async () => {
-        const db = firebase.firestore();
-        for (const orderId of selectedOrders) {
-            await db.collection('restaurant').doc('001').collection('orders').doc(orderId).update({
-                status: orderStatus
-            });
+    const handleSelectAllChange = () => {
+        if (selectAll) {
+            setSelectedOrders([]);
+        } else {
+            setSelectedOrders(orders.map(order => order.id));
         }
-        reload();
+        setSelectAll(!selectAll);
+    };
+
+    const handleStatusChange = async () => {
+        try {
+            setUpdatingStatus(true);
+            const db = firebase.firestore();
+            for (const orderId of selectedOrders) {
+                await db.collection('restaurant').doc('001').collection('orders').doc(orderId).update({
+                    status: parseInt(orderStatus, 10)
+                });
+            }
+            setSelectedOrders([]);
+            reload();
+        } catch (error) {
+            console.error('Error updating order status:', error);
+        } finally {
+            setUpdatingStatus(false);
+        }
     };
 
     useEffect(() => {
@@ -47,7 +66,7 @@ const Orders = () => {
         };
 
         fetchUserNames();
-    }, [orders]);
+    }, [orders, selectedOrders]);
 
     if (!user) {
         return <div>Kullanıcı giriş yapmadı. Siparişleri görmek için giriş yapmalısınız.</div>;
@@ -63,18 +82,22 @@ const Orders = () => {
 
     let filteredOrders = orders;
     if (filter === 'new') {
-        filteredOrders = orders.filter(order => order.status === "0");
+        filteredOrders = orders.filter(order => order.status === 0);
     } else if (filter === 'preparing') {
-        filteredOrders = orders.filter(order => order.status === "1");
+        filteredOrders = orders.filter(order => order.status === 1);
     }
 
     return (
         <div>
             <h1 className="orders-title">Siparişler</h1>
             <div>
-                <button onClick={() => setFilter('all')}>Tüm Siparişler</button>
-                <button onClick={() => setFilter('new')}>Yeni Siparişler</button>
-                <button onClick={() => setFilter('preparing')}>Hazırlanmakta Olan Siparişler</button>
+                <button onClick={() => setFilter('new')}>Yeni Siparişler
+                    ({orders.filter(order => order.status === 0).length})
+                </button>
+                <button onClick={() => setFilter('preparing')}>Hazırlanmakta Olan Siparişler
+                    ({orders.filter(order => order.status === 1).length})
+                </button>
+                <button onClick={() => setFilter('all')}>Tüm Siparişler ({orders.length})</button>
             </div>
             <div>
                 <select onChange={(e) => setOrderStatus(e.target.value)}>
@@ -82,20 +105,28 @@ const Orders = () => {
                     <option value="0">Yeni</option>
                     <option value="1">Hazırlanmakta</option>
                 </select>
-                <button onClick={handleStatusChange}>Durumu Güncelle</button>
+                <button onClick={handleStatusChange} disabled={updatingStatus}>
+                    {updatingStatus ? "Durum Güncelleniyor..." : "Durumu Güncelle"}
+                </button>
             </div>
-            {renderOrdersTable(filteredOrders, selectedOrders, handleCheckboxChange, userNames)}
+            {renderOrdersTable(filteredOrders, selectedOrders, handleCheckboxChange, userNames, selectAll, handleSelectAllChange)}
         </div>
     );
 };
 
-const renderOrdersTable = (orders, selectedOrders, handleCheckboxChange, userNames) => (
+const renderOrdersTable = (orders, selectedOrders, handleCheckboxChange, userNames, selectAll, handleSelectAllChange) => (
     <table className="orders-table">
         <thead>
         <tr>
-            <th></th>
-            <th>Customer</th>
+            <th>
+                <input
+                    type="checkbox"
+                    checked={selectAll}
+                    onChange={handleSelectAllChange}
+                />
+            </th>
             <th>Status</th>
+            <th>Customer</th>
             <th>Table No</th>
             <th>Price</th>
             <th>Orders</th>
@@ -112,15 +143,15 @@ const renderOrdersTable = (orders, selectedOrders, handleCheckboxChange, userNam
                         onChange={() => handleCheckboxChange(order.id)}
                     />
                 </td>
+                <td>{order.status === 1 ? "Preparing" : "New"}</td>
                 <td>{userNames[order.user_id]}</td>
-                <td>{order.status}</td>
                 <td>{order.tableNo}</td>
                 <td>{order.total}</td>
                 <td>
                     <ul>
                         {order.orders.map((item, index) => (
                             <li key={index}>
-                                {item.name} - {item.quantity} - {item.notes}
+                                {item.name} - {item.quantity}
                             </li>
                         ))}
                     </ul>
