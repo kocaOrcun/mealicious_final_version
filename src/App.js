@@ -12,6 +12,7 @@ import Sidebar from './components/Sidebar'
 import {Toaster} from "react-hot-toast";
 import Orders from "./pages/orders/Orders";
 import AddProduct from "./pages/addProduct/addProduct";
+import EditProduct from "./pages/editProduct/editProduct";
 
 function App() {
   return (
@@ -36,6 +37,9 @@ function App() {
             </Route>
             <Route path={"/addProduct"}>
               <AddProduct/>
+            </Route>
+            <Route path={"/editProduct"}>
+              <EditProduct/>
             </Route>
           </Switch>
         </div>

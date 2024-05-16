@@ -29,6 +29,10 @@ export default function Sidebar() {
                   <img src={AddIcon} alt="Icon"/>
                   <span>Add Product</span>
                 </NavLink>
+                <NavLink to="/editProduct">
+                  <img src={AddIcon} alt="Icon"/>
+                  <span>Edit Product</span>
+                </NavLink>
               </li>
             </ul>
           </nav>
