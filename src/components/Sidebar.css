@@ -48,9 +48,8 @@
 
 .sidebar .links li.active a {
   color: #ffffff;
-  background: white;
+  background: #ffffff;
 }
-
 .sidebar .links .active img {
   filter: invert(40%);
 }

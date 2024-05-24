@@ -3,6 +3,7 @@ import { useState, useEffect, useContext } from 'react';
 import firebase from 'firebase/app';
 import 'firebase/firestore';
 import { AuthContext } from '../context/AuthContext';
+import { toast } from 'react-hot-toast'; // Import toast from react-toastify
 
 const useOrders = () => {
     const [orders, setOrders] = useState([]);
@@ -22,20 +23,22 @@ const useOrders = () => {
         const unsubscribe = db.collection('restaurant').doc('001').collection('orders').onSnapshot(
             async (snapshot) => {
                 try {
-                    const fetchedOrders = [];
-                    snapshot.forEach((doc) => {
-                        const orderData = doc.data();
-                        const orderItems = orderData.orders.slice(0, 2);
-                        fetchedOrders.push({
-                            id: doc.id,
-                            user_id : orderData.userId,
-                            status: orderData.status,
-                            tableNo: orderData.tableNo,
-                            total: orderData.total,
-                            orders: orderItems,
-                        });
+                    snapshot.docChanges().forEach((change) => {
+                        if (change.type === "added") {
+                            const orderData = change.doc.data();
+                            const orderItems = orderData.orders.slice(0, 2);
+                            const newOrder = {
+                                id: change.doc.id,
+                                user_id : orderData.userId,
+                                status: orderData.status,
+                                tableNo: orderData.tableNo,
+                                total: orderData.total,
+                                orders: orderItems,
+                            };
+                            setOrders(prevOrders => [...prevOrders, newOrder]); // Add the new order to the existing list
+                            toast.success("New order received!"); // Show a toast notification for the new order
+                        }
                     });
-                    setOrders(fetchedOrders);
                     setLoading(false);
                     setError(null); // Reset error state if successful
                 } catch (err) {
