@@ -59,7 +59,9 @@ const Orders = () => {
             for (const order of orders) {
                 const userDoc = await db.collection('users').doc(order.user_id).get();
                 const userData = userDoc.data();
-                newNames[order.user_id] = `${userData.name} ${userData.surname}`;
+                if (userData) { // Check if userData is defined before accessing its properties
+                    newNames[order.user_id] = `${userData.name} ${userData.surname}`;
+                }
             }
 
             setUserNames(newNames);
@@ -85,28 +87,34 @@ const Orders = () => {
         filteredOrders = orders.filter(order => order.status === 0);
     } else if (filter === 'preparing') {
         filteredOrders = orders.filter(order => order.status === 1);
+    } else if (filter === 'delivered') {
+        filteredOrders = orders.filter(order => order.status === 2);
     }
 
     return (
         <div>
-            <h1 className="orders-title">Siparişler</h1>
+            <h1 className="orders-title">Orders</h1>
             <div>
-                <button onClick={() => setFilter('new')}>Yeni Siparişler
+                <button onClick={() => setFilter('new')}>New Orders
                     ({orders.filter(order => order.status === 0).length})
                 </button>
-                <button onClick={() => setFilter('preparing')}>Hazırlanmakta Olan Siparişler
+                <button onClick={() => setFilter('preparing')}>Preparing Orders
                     ({orders.filter(order => order.status === 1).length})
                 </button>
-                <button onClick={() => setFilter('all')}>Tüm Siparişler ({orders.length})</button>
+                <button onClick={() => setFilter('delivered')}>Delivered Orders
+                    ({orders.filter(order => order.status === 2).length})
+                </button>
+                <button onClick={() => setFilter('all')}>All Orders ({orders.length})</button>
             </div>
             <div>
                 <select onChange={(e) => setOrderStatus(e.target.value)}>
-                    <option value="">Durum Seçin</option>
-                    <option value="0">Yeni</option>
-                    <option value="1">Hazırlanmakta</option>
+                    <option value="">Select status</option>
+                    <option value="0">New</option>
+                    <option value="1">Preparing</option>
+                    <option value="2">Delivered</option>
                 </select>
                 <button onClick={handleStatusChange} disabled={updatingStatus}>
-                    {updatingStatus ? "Durum Güncelleniyor..." : "Durumu Güncelle"}
+                    {updatingStatus ? "Status Updating..." : "Update Status"}
                 </button>
             </div>
             {renderOrdersTable(filteredOrders, selectedOrders, handleCheckboxChange, userNames, selectAll, handleSelectAllChange)}
@@ -126,11 +134,11 @@ const renderOrdersTable = (orders, selectedOrders, handleCheckboxChange, userNam
                 />
             </th>
             <th>Status</th>
+            <th>Image</th>
             <th>Customer</th>
             <th>Table No</th>
             <th>Price</th>
             <th>Orders</th>
-            <th>Orders Id</th>
         </tr>
         </thead>
         <tbody>
@@ -143,7 +151,13 @@ const renderOrdersTable = (orders, selectedOrders, handleCheckboxChange, userNam
                         onChange={() => handleCheckboxChange(order.id)}
                     />
                 </td>
-                <td>{order.status === 1 ? "Preparing" : "New"}</td>
+                <td>{order.status === 0 ? "New" : order.status === 1 ? "Preparing" : "Delivered"}</td>
+                <td>
+                    {/* Add this to display the image */}
+                    {order.orders.map((item, index) => (
+                        <img key={index} src={item.imageUrl} alt={item.name} style={{width: '50px', height: '50px'}}/>
+                    ))}
+                </td>
                 <td>{userNames[order.user_id]}</td>
                 <td>{order.tableNo}</td>
                 <td>{order.total}</td>
@@ -156,11 +170,12 @@ const renderOrdersTable = (orders, selectedOrders, handleCheckboxChange, userNam
                         ))}
                     </ul>
                 </td>
-                <td>{order.id}</td>
+
             </tr>
         ))}
         </tbody>
     </table>
 );
+
 
 export default Orders;

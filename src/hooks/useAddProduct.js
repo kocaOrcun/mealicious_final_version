@@ -10,7 +10,7 @@ const useAddProduct = () => {
     const [description, setDescription] = useState('');
     const [imageUrl, setImageUrl] = useState('');
     const [ingredients, setIngredients] = useState('');
-    const [price, setPrice] = useState(0); // Başlangıç değerini 0 olarak ayarla
+    const [price, setPrice] = useState(0);
     const [category, setCategory] = useState('beverages');
     const db = firebase.firestore();
 
@@ -20,8 +20,6 @@ const useAddProduct = () => {
             return;
         }
 
-        console.log("addProduct fonksiyonu çağrıldı");
-
         try {
             const categoryRef = db.collection('restaurant').doc('001').collection('menus').doc('en').collection('categories').doc(category);
 
@@ -30,7 +28,7 @@ const useAddProduct = () => {
                 description,
                 imageUrl,
                 ingredients,
-                price: Number(price) // price değerini number'a çevir
+                price: Number(price)
             };
 
             const doc = await categoryRef.get();
@@ -43,19 +41,15 @@ const useAddProduct = () => {
                 });
             }
 
-            console.log("Ürün başarıyla eklendi");
-
             setName('');
             setDescription('');
             setImageUrl('');
             setIngredients('');
-            setPrice(0); // Başarıyla eklendiğinde price'ı 0'a sıfırla
+            setPrice(0);
             setCategory('beverages');
         } catch (error) {
             console.error("Ürün eklenirken bir hata oluştu: ", error);
         }
-
-        console.log("addProduct fonksiyonu tamamlandı");
     };
 
     return { addProduct, setName, setDescription, setImageUrl, setIngredients, setPrice, setCategory };

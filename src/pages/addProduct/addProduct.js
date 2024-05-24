@@ -1,10 +1,10 @@
 import React, { useContext } from 'react';
 import useAddProduct from '../../hooks/useAddProduct';
-import { AuthContext } from '../../context/AuthContext'; // AuthContext'i import edin
+import { AuthContext } from '../../context/AuthContext';
 import './addProduct.css';
 
 const AddProduct = () => {
-    const { user } = useContext(AuthContext); // AuthContext'ten user değerini alın
+    const { user } = useContext(AuthContext);
     const { name, setName, description, setDescription, imageUrl, setImageUrl, ingredients, setIngredients, price, setPrice, addProduct, category, setCategory } = useAddProduct();
 
     const handleSubmit = (e) => {
@@ -12,7 +12,6 @@ const AddProduct = () => {
         addProduct();
     };
 
-    // Kullanıcı giriş yapmamışsa, form alanlarını gösterme
     if (!user) {
         return <div>Kullanıcı giriş yapmadı. Ürün eklemek için giriş yapmalısınız.</div>;
     }
@@ -27,6 +26,7 @@ const AddProduct = () => {
                             className="form-control">
                         <option value="beverages">Beverages</option>
                         <option value="desserts">Desserts</option>
+                        <option value="meals">Meals</option>
                     </select>
                 </div>
                 <div className="form-group">

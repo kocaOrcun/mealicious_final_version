@@ -54,7 +54,11 @@ const useOrders = () => {
         return () => unsubscribe();
     }, [user]);
 
-    return { orders, loading, error };
+    const getOrdersByStatus = (status) => {
+        return orders.filter(order => order.status === status);
+    };
+
+    return { orders, loading, error, getOrdersByStatus };
 };
 
 export default useOrders;
