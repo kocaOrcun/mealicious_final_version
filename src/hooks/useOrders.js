@@ -3,7 +3,7 @@ import { useState, useEffect, useContext } from 'react';
 import firebase from 'firebase/app';
 import 'firebase/firestore';
 import { AuthContext } from '../context/AuthContext';
-import { toast } from 'react-hot-toast'; // Import toast from react-toastify
+import { toast } from 'react-hot-toast';
 
 const useOrders = () => {
     const [orders, setOrders] = useState([]);
@@ -24,19 +24,22 @@ const useOrders = () => {
             async (snapshot) => {
                 try {
                     snapshot.docChanges().forEach((change) => {
+                        const orderData = change.doc.data();
+                        const orderItems = orderData.orders.slice(0, 2);
+                        const newOrder = {
+                            id: change.doc.id,
+                            user_id : orderData.userId,
+                            status: orderData.status,
+                            tableNo: orderData.tableNo,
+                            total: orderData.total,
+                            orders: orderItems,
+                            timestamp: Date.now(), // Add a timestamp to each order
+                        };
                         if (change.type === "added") {
-                            const orderData = change.doc.data();
-                            const orderItems = orderData.orders.slice(0, 2);
-                            const newOrder = {
-                                id: change.doc.id,
-                                user_id : orderData.userId,
-                                status: orderData.status,
-                                tableNo: orderData.tableNo,
-                                total: orderData.total,
-                                orders: orderItems,
-                            };
-                            setOrders(prevOrders => [...prevOrders, newOrder]); // Add the new order to the existing list
+                            setOrders(prevOrders => [newOrder, ...prevOrders]); // Add the new order to the top of the list
                             toast.success("New order received!"); // Show a toast notification for the new order
+                        } else if (change.type === "modified") {
+                            setOrders(prevOrders => prevOrders.map(order => order.id === newOrder.id ? newOrder : order)); // Update the order in the existing list
                         }
                     });
                     setLoading(false);

@@ -2,6 +2,7 @@
 import React, { useState, useEffect, useContext } from 'react';
 import useOrders from '../../hooks/useOrders';
 import { AuthContext } from '../../context/AuthContext';
+import {toast} from "react-hot-toast";
 import firebase from 'firebase/app';
 import 'firebase/firestore';
 import './Orders.css';
@@ -15,6 +16,7 @@ const Orders = () => {
     const [orderStatus, setOrderStatus] = useState('');
     const [updatingStatus, setUpdatingStatus] = useState(false);
     const [selectAll, setSelectAll] = useState(false);
+    const Toast = toast;
 
     const handleCheckboxChange = async (orderId) => {
         if (selectedOrders.includes(orderId)) {
@@ -26,9 +28,18 @@ const Orders = () => {
 
     const handleSelectAllChange = () => {
         if (selectAll) {
-            setSelectedOrders([]);
+            setSelectedOrders([]); // Deselect all orders
         } else {
-            setSelectedOrders(orders.map(order => order.id));
+            // Select only the orders that match the current filter
+            let filteredOrders = orders;
+            if (filter === 'new') {
+                filteredOrders = orders.filter(order => order.status === 0);
+            } else if (filter === 'preparing') {
+                filteredOrders = orders.filter(order => order.status === 1);
+            } else if (filter === 'delivered') {
+                filteredOrders = orders.filter(order => order.status === 2);
+            }
+            setSelectedOrders(filteredOrders.map(order => order.id));
         }
         setSelectAll(!selectAll);
     };
@@ -38,14 +49,25 @@ const Orders = () => {
             setUpdatingStatus(true);
             const db = firebase.firestore();
             for (const orderId of selectedOrders) {
-                await db.collection('restaurant').doc('001').collection('orders').doc(orderId).update({
-                    status: parseInt(orderStatus, 10)
-                });
+                const order = orders.find(order => order.id === orderId);
+                if (order) {
+                    // Check if the order can be updated to the new status
+                    if ((order.status === 0 && orderStatus === '1') || // New -> Preparing
+                        (order.status === 1 && orderStatus === '2')) { // Preparing -> Delivered
+                        await db.collection('restaurant').doc('001').collection('orders').doc(orderId).update({
+                            status: parseInt(orderStatus, 10)
+                        });
+                    } else {
+                        console.error(`Cannot update order ${orderId} from status ${order.status} to ${orderStatus}`);
+                        toast.error(`Cannot update order ${orderId} from status ${order.status} to ${orderStatus}`); // Show an error toast
+                    }
+                }
             }
             setSelectedOrders([]);
             reload();
         } catch (error) {
             console.error('Error updating order status:', error);
+            //toast.error('Error updating order status: ' + error.message); // Show an error toast
         } finally {
             setUpdatingStatus(false);
         }
@@ -90,6 +112,9 @@ const Orders = () => {
     } else if (filter === 'delivered') {
         filteredOrders = orders.filter(order => order.status === 2);
     }
+
+    // Sort orders by status
+    filteredOrders.sort((a, b) => b.status - a.status);
 
     return (
         <div>
@@ -143,7 +168,7 @@ const renderOrdersTable = (orders, selectedOrders, handleCheckboxChange, userNam
         </thead>
         <tbody>
         {orders.map((order) => (
-            <tr key={order.id}>
+            <tr key={order.id} style={{backgroundColor: order.status === 0 && Date.now() - order.timestamp < 30000 ? 'lightyellow' : 'white'}}>
                 <td>
                     <input
                         type="checkbox"
