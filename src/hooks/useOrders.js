@@ -23,12 +23,15 @@ const useOrders = () => {
         const unsubscribe = db.collection('restaurant').doc('001').collection('orders').onSnapshot(
             async (snapshot) => {
                 try {
+                    let newOrders = [];
+                    let modifiedOrders = [];
+
                     snapshot.docChanges().forEach((change) => {
                         const orderData = change.doc.data();
                         const orderItems = orderData.orders.slice(0, 2);
                         const newOrder = {
                             id: change.doc.id,
-                            user_id : orderData.userId,
+                            user_id: orderData.userId,
                             status: orderData.status,
                             tableNo: orderData.tableNo,
                             total: orderData.total,
@@ -36,12 +39,24 @@ const useOrders = () => {
                             timestamp: Date.now(), // Add a timestamp to each order
                         };
                         if (change.type === "added") {
-                            setOrders(prevOrders => [newOrder, ...prevOrders]); // Add the new order to the top of the list
-                            toast.success("New order received!"); // Show a toast notification for the new order
+                            newOrders.push(newOrder);
                         } else if (change.type === "modified") {
-                            setOrders(prevOrders => prevOrders.map(order => order.id === newOrder.id ? newOrder : order)); // Update the order in the existing list
+                            modifiedOrders.push(newOrder);
                         }
                     });
+
+                    if (newOrders.length > 0) {
+                        setOrders(prevOrders => [...newOrders, ...prevOrders]);
+                        toast.success(`${newOrders.length} new order(s) received!`);
+                    }
+
+                    if (modifiedOrders.length > 0) {
+                        setOrders(prevOrders => prevOrders.map(order => {
+                            const modifiedOrder = modifiedOrders.find(o => o.id === order.id);
+                            return modifiedOrder ? modifiedOrder : order;
+                        }));
+                    }
+
                     setLoading(false);
                     setError(null); // Reset error state if successful
                 } catch (err) {

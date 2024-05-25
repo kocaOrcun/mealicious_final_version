@@ -1,4 +1,3 @@
-// Orders.jsx
 import React, { useState, useEffect, useContext } from 'react';
 import useOrders from '../../hooks/useOrders';
 import { AuthContext } from '../../context/AuthContext';
