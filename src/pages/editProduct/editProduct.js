@@ -1,26 +1,27 @@
-import React, { useState } from 'react';
-import useEditProduct from '../../hooks/useEditProduct';
-import './editProduct.css';
+import React, { useState } from "react";
+import useEditProduct from "../../hooks/useEditProduct";
+import "./editProduct.css";
 
 const EditProduct = () => {
-    const { beverages, desserts, meals, editProduct, deleteProduct } = useEditProduct();
+    const { beverages, desserts, meals, editProduct, deleteProduct } =
+        useEditProduct();
     const [editingProduct, setEditingProduct] = useState(null);
     const [editingCategory, setEditingCategory] = useState(null);
-    const [selectedCategory, setSelectedCategory] = useState(''); // Add this state
+    const [selectedCategory, setSelectedCategory] = useState(""); // Add this state
 
     const handleEdit = (category, product) => {
-        setEditingProduct({...product}); // Make a copy of the product
+        setEditingProduct({ ...product }); // Make a copy of the product
         setEditingCategory(category);
     };
 
     const handleSave = async () => {
         if (editingProduct && editingCategory) {
             try {
-                await editProduct(editingCategory, {...editingProduct});
+                await editProduct(editingCategory, { ...editingProduct });
                 // Trigger re-render to update the displayed product list
                 setEditingProduct(null);
                 setEditingCategory(null);
-                setSelectedCategory(''); // Clear the selected category state
+                setSelectedCategory(""); // Clear the selected category state
             } catch (error) {
                 console.error("Failed to edit product: ", error);
             }
@@ -29,13 +30,14 @@ const EditProduct = () => {
 
     const handleDelete = async (category, product) => {
         try {
-            await deleteProduct(category, {...product}); // Make a copy of the product
+            await deleteProduct(category, { ...product }); // Make a copy of the product
         } catch (error) {
             console.error("Failed to delete product: ", error);
         }
     };
 
-    const handleCategoryChange = (category) => { // Update this function
+    const handleCategoryChange = (category) => {
+        // Update this function
         setSelectedCategory(category);
     };
 
@@ -47,33 +49,82 @@ const EditProduct = () => {
                     <form>
                         <label>
                             Name:
-                            <input type="text" value={editingProduct.name} onChange={(e) => setEditingProduct({...editingProduct, name: e.target.value})} />
+                            <input
+                                type="text"
+                                value={editingProduct.name}
+                                onChange={(e) =>
+                                    setEditingProduct({ ...editingProduct, name: e.target.value })
+                                }
+                            />
                         </label>
                         <label>
                             Description:
-                            <input type="text" value={editingProduct.description} onChange={(e) => setEditingProduct({...editingProduct, description: e.target.value})} />
+                            <input
+                                type="text"
+                                value={editingProduct.description}
+                                onChange={(e) =>
+                                    setEditingProduct({
+                                        ...editingProduct,
+                                        description: e.target.value,
+                                    })
+                                }
+                            />
                         </label>
                         <label>
                             Image URL:
-                            <input type="text" value={editingProduct.imageUrl} onChange={(e) => setEditingProduct({...editingProduct, imageUrl: e.target.value})} />
+                            <input
+                                type="text"
+                                value={editingProduct.imageUrl}
+                                onChange={(e) =>
+                                    setEditingProduct({
+                                        ...editingProduct,
+                                        imageUrl: e.target.value,
+                                    })
+                                }
+                            />
                         </label>
                         <label>
                             Ingredients:
-                            <input type="text" value={editingProduct.ingredients} onChange={(e) => setEditingProduct({...editingProduct, ingredients: e.target.value})} />
+                            <input
+                                type="text"
+                                value={editingProduct.ingredients}
+                                onChange={(e) =>
+                                    setEditingProduct({
+                                        ...editingProduct,
+                                        ingredients: e.target.value,
+                                    })
+                                }
+                            />
                         </label>
                         <label>
                             Price:
-                            <input type="text" value={editingProduct.price} onChange={(e) => setEditingProduct({...editingProduct, price: e.target.value})} />
+                            <input
+                                type="text"
+                                value={editingProduct.price}
+                                onChange={(e) =>
+                                    setEditingProduct({
+                                        ...editingProduct,
+                                        price: e.target.value,
+                                    })
+                                }
+                            />
                         </label>
-                        <button type="button" onClick={handleSave}>Save</button>
+                        <button type="button" onClick={handleSave}>
+                            Save
+                        </button>
                     </form>
                 </div>
             ) : (
                 <>
                     <h2>Select Category:</h2>
-                    <div> {/* Add this div */}
-                        {['beverages', 'desserts', 'meals'].map((category, index) => (
-                            <button key={index} onClick={() => handleCategoryChange(category)}>
+                    <div>
+                        {" "}
+                        {/* Add this div */}
+                        {["beverages", "desserts", "meals"].map((category, index) => (
+                            <button
+                                key={index}
+                                onClick={() => handleCategoryChange(category)}
+                            >
                                 {category}
                             </button>
                         ))}
@@ -94,19 +145,39 @@ const EditProduct = () => {
                                 </tr>
                                 </thead>
                                 <tbody>
-                                {(selectedCategory === 'beverages' ? beverages : selectedCategory === 'desserts' ? desserts : meals).map((product, index) => (
+                                {(selectedCategory === "beverages"
+                                        ? beverages
+                                        : selectedCategory === "desserts"
+                                            ? desserts
+                                            : meals
+                                ).map((product, index) => (
                                     <tr key={index}>
                                         <td>{product.name}</td>
                                         <td>{product.description}</td>
                                         <td>
-                                            <img src={product.imageUrl} alt={product.name}
-                                                 style={{width: '50px', height: '50px'}}/>
+                                            <img
+                                                src={product.imageUrl}
+                                                alt={product.name}
+                                                style={{ width: "50px", height: "50px" }}
+                                            />
                                         </td>
                                         <td>{product.ingredients}</td>
                                         <td>{product.price}</td>
                                         <td>
-                                            <button onClick={() => handleEdit(selectedCategory, {...product})}>Edit</button>
-                                            <button onClick={() => handleDelete(selectedCategory, {...product})}>Delete</button>
+                                            <button
+                                                onClick={() =>
+                                                    handleEdit(selectedCategory, { ...product })
+                                                }
+                                            >
+                                                Edit
+                                            </button>
+                                            <button
+                                                onClick={() =>
+                                                    handleDelete(selectedCategory, { ...product })
+                                                }
+                                            >
+                                                Delete
+                                            </button>
                                         </td>
                                     </tr>
                                 ))}
