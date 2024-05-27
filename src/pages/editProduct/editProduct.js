@@ -17,11 +17,14 @@ const EditProduct = () => {
     const handleSave = async () => {
         if (editingProduct && editingCategory) {
             try {
-                await editProduct(editingCategory, { ...editingProduct });
-                // Trigger re-render to update the displayed product list
+                // Ensure price is a number
+                const updatedProduct = {
+                    ...editingProduct,
+                    price: parseFloat(editingProduct.price)
+                };
+                await editProduct(editingCategory, updatedProduct);
                 setEditingProduct(null);
                 setEditingCategory(null);
-                setSelectedCategory(""); // Clear the selected category state
             } catch (error) {
                 console.error("Failed to edit product: ", error);
             }
