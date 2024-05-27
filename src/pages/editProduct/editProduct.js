@@ -9,20 +9,28 @@ const EditProduct = () => {
     const [selectedCategory, setSelectedCategory] = useState(''); // Add this state
 
     const handleEdit = (category, product) => {
-        setEditingProduct({...product});
+        setEditingProduct({...product}); // Make a copy of the product
         setEditingCategory(category);
     };
 
-    const handleSave = () => {
+    const handleSave = async () => {
         if (editingProduct && editingCategory) {
-            editProduct(editingCategory, {...editingProduct});
+            try {
+                await editProduct(editingCategory, {...editingProduct});
+                setEditingProduct(null);
+                setEditingCategory(null);
+            } catch (error) {
+                console.error("Failed to edit product: ", error);
+            }
         }
-        setEditingProduct(null);
-        setEditingCategory(null);
     };
 
-    const handleDelete = (category, product) => {
-        deleteProduct(category, product);
+    const handleDelete = async (category, product) => {
+        try {
+            await deleteProduct(category, {...product}); // Make a copy of the product
+        } catch (error) {
+            console.error("Failed to delete product: ", error);
+        }
     };
 
     const handleCategoryChange = (category) => { // Update this function
@@ -89,16 +97,14 @@ const EditProduct = () => {
                                         <td>{product.name}</td>
                                         <td>{product.description}</td>
                                         <td>
-                                            {/* Add this to display the image */}
                                             <img src={product.imageUrl} alt={product.name}
                                                  style={{width: '50px', height: '50px'}}/>
                                         </td>
                                         <td>{product.ingredients}</td>
                                         <td>{product.price}</td>
                                         <td>
-                                            <button onClick={() => handleEdit(selectedCategory, product)}>Edit</button>
-                                            <button onClick={() => handleDelete(selectedCategory, product)}>Delete
-                                            </button>
+                                            <button onClick={() => handleEdit(selectedCategory, {...product})}>Edit</button>
+                                            <button onClick={() => handleDelete(selectedCategory, {...product})}>Delete</button>
                                         </td>
                                     </tr>
                                 ))}
