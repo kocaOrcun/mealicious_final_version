@@ -17,8 +17,10 @@ const EditProduct = () => {
         if (editingProduct && editingCategory) {
             try {
                 await editProduct(editingCategory, {...editingProduct});
+                // Trigger re-render to update the displayed product list
                 setEditingProduct(null);
                 setEditingCategory(null);
+                setSelectedCategory(''); // Clear the selected category state
             } catch (error) {
                 console.error("Failed to edit product: ", error);
             }

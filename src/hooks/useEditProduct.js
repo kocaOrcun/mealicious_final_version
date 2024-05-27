@@ -28,19 +28,19 @@ const useEditProduct = () => {
         if (doc.exists) {
             let products = doc.data().items;
 
-            // Güncellenmek istenen ürünün indexini bul
-            let productIndex = products.findIndex((p) => p.id === updatedProduct.id);
+            // Güncellenmek istenen ürünü bul
+            let productToUpdate = products.find((p) => p.id === updatedProduct.id);
 
-            if (productIndex !== -1) {
+            if (productToUpdate) {
                 // Güncelleme işlemi
-                let updatedProducts = [...products];
-                updatedProducts[productIndex] = updatedProduct;
+                Object.assign(productToUpdate, updatedProduct);
 
-                await productRef.update({ items: updatedProducts });
+                await productRef.update({ items: products });
                 await fetchProducts();
             }
         }
     };
+
 
     const deleteProduct = async (category, product) => {
         const productRef = db.collection('restaurant').doc('001').collection('menus').doc('en').collection('categories').doc(category);
