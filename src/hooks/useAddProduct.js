@@ -70,7 +70,7 @@ const useAddProduct = () => {
             setImageUrl("");
             setIngredients("");
             setPrice(0);
-            setCategory("beverages");
+            setCategory("beveragess");
         } catch (error) {
             console.error("Ürün eklenirken bir hata oluştu: ", error);
         }

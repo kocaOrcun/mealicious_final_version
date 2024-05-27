@@ -55,7 +55,7 @@ const useEditProduct = () => {
         if (doc.exists) {
             let products = doc.data().items;
 
-            // Güncellenmek istenen ürünü bul
+            // Güncellenmek istenen ürünü bull
             let productToUpdate = products.find(
                 (p) => p.productID === updatedProduct.productID
             );
