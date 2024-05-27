@@ -4,7 +4,6 @@ import { useAuthContext } from '../hooks/useAuthContext' // useAuthContext hook'
 
 // styles & images
 import './Navbar.css'
-import Temple from '../assets/temple.svg'
 
 export default function Navbar() {
   const { logout, isPending } = useLogout()
