@@ -17,7 +17,7 @@ export const useLogout = () => {
     setIsPending(true)
 
     try {
-      // update online status
+      // update online statuss
       const { uid } = projectAuth.currentUser
       await projectFirestore.collection('admins').doc(uid).update({ online: false })
       
