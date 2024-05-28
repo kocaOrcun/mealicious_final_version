@@ -1,15 +1,22 @@
 import React, { useContext } from 'react';
+import { Form, Input, Button, Select, message, Typography } from 'antd';
 import useAddProduct from '../../hooks/useAddProduct';
 import { AuthContext } from '../../context/AuthContext';
 import './addProduct.css';
+import { useHistory } from 'react-router-dom';
+
+const { Option } = Select;
+const { Title } = Typography;
 
 const AddProduct = () => {
     const { user } = useContext(AuthContext);
-    const { name, setName, description, setDescription, imageUrl, setImageUrl, ingredients, setIngredients, price, setPrice, addProduct, category, setCategory } = useAddProduct();
-
-    const handleSubmit = (e) => {
-        e.preventDefault();
+    const { name, setName, description, setDescription, imageUrl, setImageUrl, ingredients, setIngredients, price, setPrice, addProduct, category, setCategory, resetForm } = useAddProduct();
+    const history = useHistory();
+    const handleSubmit = () => {
         addProduct();
+        message.success('Ürün başarıyla eklendi!');
+        resetForm();
+        history.push('/addProduct'); // Kullanıcıyı 'addProduct' sayfasına yönlendirir
     };
 
     if (!user) {
@@ -18,45 +25,64 @@ const AddProduct = () => {
 
     return (
         <div className="add-product-container">
-            <h2>Ürün Ekle</h2>
-            <form onSubmit={handleSubmit} className="add-product-form">
-                <div className="form-group">
-                    <label>Kategori:</label>
-                    <select value={category} onChange={(e) => setCategory(e.target.value)} required
-                            className="form-control">
-                        <option value="beverages">Beverages</option>
-                        <option value="desserts">Desserts</option>
-                        <option value="meals">Meals</option>
-                    </select>
-                </div>
-                <div className="form-group">
-                    <label>Ürün Adı:</label>
-                    <input type="text" value={name} onChange={(e) => setName(e.target.value)} required
-                           className="form-control"/>
-                </div>
-                <div className="form-group">
-                    <label>Açıklama:</label>
-                    <input type="text" value={description} onChange={(e) => setDescription(e.target.value)} required
-                           className="form-control"/>
-                </div>
-                <div className="form-group">
-                    <label>Resim URL:</label>
-                    <input type="text" value={imageUrl} onChange={(e) => setImageUrl(e.target.value)} required
-                           className="form-control"/>
-                </div>
-                <div className="form-group">
-                    <label>İçerik:</label>
-                    <input type="text" value={ingredients} onChange={(e) => setIngredients(e.target.value)} required
-                           className="form-control"/>
-                </div>
-                <div className="form-group">
-                    <label>Fiyat:</label>
-                    <input type="number" value={price} onChange={(e) => setPrice(e.target.value)} required
-                           className="form-control"/>
-                </div>
-
-                <button type="submit" className="btn btn-primary">Ekle</button>
-            </form>
+            <Title level={2}>Ürün Ekle</Title>
+            <Form
+                onFinish={handleSubmit}
+                layout="vertical"
+                className="add-product-form"
+            >
+                <Form.Item
+                    label="Kategori"
+                    name="category"
+                    rules={[{ required: true, message: 'Lütfen bir kategori seçin!' }]}
+                >
+                    <Select value={category} onChange={(value) => setCategory(value)}>
+                        <Option value="beverages">Beverages</Option>
+                        <Option value="desserts">Desserts</Option>
+                        <Option value="meals">Meals</Option>
+                    </Select>
+                </Form.Item>
+                <Form.Item
+                    label="Ürün Adı"
+                    name="name"
+                    rules={[{ required: true, message: 'Lütfen ürün adını girin!' }]}
+                >
+                    <Input value={name} onChange={(e) => setName(e.target.value)} />
+                </Form.Item>
+                <Form.Item
+                    label="Açıklama"
+                    name="description"
+                    rules={[{ required: true, message: 'Lütfen açıklama girin!' }]}
+                >
+                    <Input value={description} onChange={(e) => setDescription(e.target.value)} />
+                </Form.Item>
+                <Form.Item
+                    label="Resim URL"
+                    name="imageUrl"
+                    rules={[{ required: true, message: "Lütfen resim URL'sini girin!" }]}
+                >
+                    <Input value={imageUrl} onChange={(e) => setImageUrl(e.target.value)} />
+                </Form.Item>
+                <Form.Item
+                    label="İçerik"
+                    name="ingredients"
+                    rules={[{ required: true, message: 'Lütfen içerik girin!' }]}
+                >
+                    <Input value={ingredients} onChange={(e) => setIngredients(e.target.value)} />
+                </Form.Item>
+                <Form.Item
+                    label="Fiyat"
+                    name="price"
+                    rules={[{ required: true, message: 'Lütfen fiyatı girin!' }]}
+                >
+                    <Input type="number" value={price} onChange={(e) => setPrice(e.target.value)} />
+                </Form.Item>
+                <Form.Item>
+                    <Button type="primary" htmlType="submit">
+                        Ekle
+                    </Button>
+                </Form.Item>
+            </Form>
         </div>
     );
 };

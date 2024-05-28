@@ -1,23 +1,31 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import useEditProduct from "../../hooks/useEditProduct";
-import "./editProduct.css";
+import { AuthContext } from '../../context/AuthContext';
+import { Modal, Button, Form, Input, Table, Typography, Select, Space, Image, message } from 'antd';
+
+const { Title } = Typography;
+const { Option } = Select;
 
 const EditProduct = () => {
     const { beverages, desserts, meals, editProduct, deleteProduct } =
         useEditProduct();
     const [editingProduct, setEditingProduct] = useState(null);
     const [editingCategory, setEditingCategory] = useState(null);
-    const [selectedCategory, setSelectedCategory] = useState(""); // Add this state
+    const [selectedCategory, setSelectedCategory] = useState("");
+    const { user } = useContext(AuthContext);
 
     const handleEdit = (category, product) => {
-        setEditingProduct({ ...product }); // Make a copy of the product
+        setEditingProduct({ ...product });
         setEditingCategory(category);
     };
+
+    if (!user) {
+        return <div>Kullanıcı giriş yapmadı. Ürün eklemek için giriş yapmalısınız.</div>;
+    }
 
     const handleSave = async () => {
         if (editingProduct && editingCategory) {
             try {
-                // Ensure price is a number
                 const updatedProduct = {
                     ...editingProduct,
                     price: parseFloat(editingProduct.price)
@@ -25,45 +33,57 @@ const EditProduct = () => {
                 await editProduct(editingCategory, updatedProduct);
                 setEditingProduct(null);
                 setEditingCategory(null);
+                message.success("Ürün başarıyla güncellendi");
             } catch (error) {
                 console.error("Failed to edit product: ", error);
+                message.error("Ürün güncelleme başarısız oldu");
             }
         }
     };
 
-    const handleDelete = async (category, product) => {
-        try {
-            await deleteProduct(category, { ...product }); // Make a copy of the product
-        } catch (error) {
-            console.error("Failed to delete product: ", error);
-        }
+    const handleDelete = (category, product) => {
+        Modal.confirm({
+            title: 'Ürünü silmek istediğinize emin misiniz?',
+            content: 'Bu işlem geri alınamaz.',
+            okText: 'Evet',
+            okType: 'danger',
+            cancelText: 'Hayır',
+            onOk: async () => {
+                try {
+                    await deleteProduct(category, { ...product });
+                    message.success("Ürün başarıyla silindi");
+                } catch (error) {
+                    console.error("Failed to delete product: ", error);
+                    message.error("Ürün silme başarısız oldu");
+                }
+            },
+        });
     };
 
     const handleCategoryChange = (category) => {
-        // Update this function
         setSelectedCategory(category);
+    };
+    const handleCancel = () => {
+        setEditingProduct(null);
+        setEditingCategory(null);
     };
 
     return (
         <div className="edit-product-container">
             {editingProduct ? (
                 <div>
-                    <h2>Edit Product</h2>
-                    <form>
-                        <label>
-                            Name:
-                            <input
-                                type="text"
+                    <Title level={2}>Ürünü Düzenle</Title>
+                    <Form layout="vertical">
+                        <Form.Item label="Ad">
+                            <Input
                                 value={editingProduct.name}
                                 onChange={(e) =>
                                     setEditingProduct({ ...editingProduct, name: e.target.value })
                                 }
                             />
-                        </label>
-                        <label>
-                            Description:
-                            <input
-                                type="text"
+                        </Form.Item>
+                        <Form.Item label="Açıklama">
+                            <Input
                                 value={editingProduct.description}
                                 onChange={(e) =>
                                     setEditingProduct({
@@ -72,11 +92,9 @@ const EditProduct = () => {
                                     })
                                 }
                             />
-                        </label>
-                        <label>
-                            Image URL:
-                            <input
-                                type="text"
+                        </Form.Item>
+                        <Form.Item label="Resim URL">
+                            <Input
                                 value={editingProduct.imageUrl}
                                 onChange={(e) =>
                                     setEditingProduct({
@@ -85,11 +103,9 @@ const EditProduct = () => {
                                     })
                                 }
                             />
-                        </label>
-                        <label>
-                            Ingredients:
-                            <input
-                                type="text"
+                        </Form.Item>
+                        <Form.Item label="Malzemeler">
+                            <Input
                                 value={editingProduct.ingredients}
                                 onChange={(e) =>
                                     setEditingProduct({
@@ -98,11 +114,9 @@ const EditProduct = () => {
                                     })
                                 }
                             />
-                        </label>
-                        <label>
-                            Price:
-                            <input
-                                type="text"
+                        </Form.Item>
+                        <Form.Item label="Fiyat">
+                            <Input
                                 value={editingProduct.price}
                                 onChange={(e) =>
                                     setEditingProduct({
@@ -111,81 +125,70 @@ const EditProduct = () => {
                                     })
                                 }
                             />
-                        </label>
-                        <button type="button" onClick={handleSave}>
-                            Save
-                        </button>
-                    </form>
+                        </Form.Item>
+                        <Button type="primary" onClick={handleSave}>
+                            Kaydet
+                        </Button>
+                        <Button onClick={handleCancel}>
+                            İptal
+                        </Button>
+                    </Form>
                 </div>
             ) : (
                 <>
-                    <h2>Select Category:</h2>
-                    <div>
-                        {" "}
-                        {/* Add this div */}
+                    <Title level={2}>Kategori Seçin:</Title>
+                    <Space>
                         {["beverages", "desserts", "meals"].map((category, index) => (
-                            <button
-                                key={index}
-                                onClick={() => handleCategoryChange(category)}
-                            >
+                            <Button key={index} onClick={() => handleCategoryChange(category)}>
                                 {category}
-                            </button>
+                            </Button>
                         ))}
-                    </div>
-                    {selectedCategory && ( // Only show the table if a category is selected
+                    </Space>
+                    {selectedCategory && (
                         <>
-                            <h2>{selectedCategory}</h2>
-                            <table>
-                                <thead>
-                                <tr>
-                                    <th>Name</th>
-                                    <th>Description</th>
-                                    <th>Image</th>
-                                    {/* Change this from "Image URL" to "Image" */}
-                                    <th>Ingredients</th>
-                                    <th>Price</th>
-                                    <th>Actions</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                {(selectedCategory === "beverages"
+                            <Title level={2}>{selectedCategory}</Title>
+                            <Table
+                                dataSource={
+                                    selectedCategory === "beverages"
                                         ? beverages
                                         : selectedCategory === "desserts"
                                             ? desserts
                                             : meals
-                                ).map((product, index) => (
-                                    <tr key={index}>
-                                        <td>{product.name}</td>
-                                        <td>{product.description}</td>
-                                        <td>
-                                            <img
-                                                src={product.imageUrl}
-                                                alt={product.name}
-                                                style={{ width: "50px", height: "50px" }}
-                                            />
-                                        </td>
-                                        <td>{product.ingredients}</td>
-                                        <td>{product.price}</td>
-                                        <td>
-                                            <button
-                                                onClick={() =>
-                                                    handleEdit(selectedCategory, { ...product })
-                                                }
-                                            >
-                                                Edit
-                                            </button>
-                                            <button
-                                                onClick={() =>
-                                                    handleDelete(selectedCategory, { ...product })
-                                                }
-                                            >
-                                                Delete
-                                            </button>
-                                        </td>
-                                    </tr>
-                                ))}
-                                </tbody>
-                            </table>
+                                }
+                                rowKey="name"
+                            >
+                                <Table.Column title="Ad" dataIndex="name" key="name" />
+                                <Table.Column title="Açıklama" dataIndex="description" key="description" />
+                                <Table.Column
+                                    title="Resim"
+                                    dataIndex="imageUrl"
+                                    key="imageUrl"
+                                    render={(text, record) => (
+                                        <Image
+                                            src={text}
+                                            alt={record.name}
+                                            width={50}
+                                            height={50}
+                                        />
+                                    )}
+                                />
+                                <Table.Column title="Malzemeler" dataIndex="ingredients" key="ingredients" />
+                                <Table.Column title="Fiyat" dataIndex="price" key="price" />
+                                <Table.Column
+                                    title="Aksiyonlar"
+                                    key="actions"
+                                    render={(text, record) => (
+                                        <Space>
+                                            <Button onClick={() => handleEdit(selectedCategory, { ...record })}>
+                                                Düzenle
+                                            </Button>
+                                            <Button onClick={() => handleDelete(selectedCategory, { ...record })} danger>
+                                                Sil
+                                            </Button>
+                                        </Space>
+                                    )}
+                                />
+                            </Table>
                         </>
                     )}
                 </>
