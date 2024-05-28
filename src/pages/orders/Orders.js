@@ -136,22 +136,13 @@ const Orders = () => {
         {
             title: 'Image',
             dataIndex: 'orders',
-            render: orders => orders.map((item, index) => (
-                <img key={index} src={item.imageUrl} alt={item.name} style={{ width: '50px', height: '50px' }} />
-            )),
-        },
-        {
-            title: 'Customer',
-            dataIndex: 'user_id',
-            render: userId => userNames[userId],
-        },
-        {
-            title: 'Table No',
-            dataIndex: 'tableNo',
-        },
-        {
-            title: 'Price',
-            dataIndex: 'total',
+            render: orders => (
+                <div>
+                    {orders.map((item, index) => (
+                        <img key={index} src={item.imageUrl} alt={item.name} style={{ width: '50px', height: '50px', marginRight: '5px' }} />
+                    ))}
+                </div>
+            ),
         },
         {
             title: 'Orders',
@@ -165,6 +156,19 @@ const Orders = () => {
                     ))}
                 </ul>
             ),
+        },
+        {
+            title: 'Customer',
+            dataIndex: 'user_id',
+            render: userId => userNames[userId],
+        },
+        {
+            title: 'Table No',
+            dataIndex: 'tableNo',
+        },
+        {
+            title: 'Price',
+            dataIndex: 'total',
         },
     ];
 
@@ -199,3 +203,4 @@ const Orders = () => {
 };
 
 export default Orders;
+

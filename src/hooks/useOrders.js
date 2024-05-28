@@ -28,14 +28,13 @@ const useOrders = () => {
 
                     snapshot.docChanges().forEach((change) => {
                         const orderData = change.doc.data();
-                        const orderItems = orderData.orders.slice(0, 2);
                         const newOrder = {
                             id: change.doc.id,
                             user_id: orderData.userId,
                             status: orderData.status,
                             tableNo: orderData.tableNo,
                             total: orderData.total,
-                            orders: orderItems,
+                            orders: orderData.orders, // Get all order items
                             timestamp: Date.now(), // Add a timestamp to each order
                         };
                         if (change.type === "added") {
