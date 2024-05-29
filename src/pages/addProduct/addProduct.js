@@ -5,6 +5,8 @@ import useAddProduct from '../../hooks/useAddProduct';
 import { AuthContext } from '../../context/AuthContext';
 import './addProduct.css';
 import { useHistory } from 'react-router-dom';
+import firebase from 'firebase/app';
+import 'firebase/storage'; // Firebase Storage modülünü dahil edin
 
 const { Option } = Select;
 const { Title } = Typography;
@@ -17,23 +19,24 @@ const AddProduct = () => {
         imageUrl, setImageUrl,
         ingredients, setIngredients,
         price, setPrice,
-        addProduct, category, setCategory,
-        resetForm, handleImageUpload
+        addProduct, handleImageUpload, category, setCategory,
+        resetForm,
     } = useAddProduct();
-    const [file, setFile] = useState(null);
+    const [fileList, setFileList] = useState([]);
     const [uploadProgress, setUploadProgress] = useState(0);
     const history = useHistory();
 
     const handleSubmit = async () => {
-        if (file) {
+        if (fileList.length > 0) {
             try {
-                const uploadedImageUrl = await handleImageUpload(file, setUploadProgress);
-                setImageUrl(uploadedImageUrl);
-                await addProduct();
+                const file = fileList[0].originFileObj;
+                const downloadURL = await handleImageUpload(file, category, setUploadProgress);
+                await addProduct(downloadURL);
                 message.success('Ürün başarıyla eklendi!');
                 resetForm();
                 setUploadProgress(0);
-                history.push('/addProduct');
+                setFileList([]);
+                history.push('/'); // Ürün eklemeden sonra ana sayfaya yönlendirme
             } catch (error) {
                 message.error('Resim yüklenirken bir hata oluştu.');
             }
@@ -43,9 +46,7 @@ const AddProduct = () => {
     };
 
     const handleFileChange = (info) => {
-        if (info.file.status === 'done' || info.file.status === 'uploading') {
-            setFile(info.file.originFileObj);
-        }
+        setFileList(info.fileList);
     };
 
     if (!user) {
@@ -94,13 +95,16 @@ const AddProduct = () => {
                         listType="picture"
                         beforeUpload={() => false}
                         onChange={handleFileChange}
+                        fileList={fileList}
                     >
                         <Button icon={<UploadOutlined />}>Choose Image</Button>
                     </Upload>
-                    {uploadProgress > 0 && (
-                        <Progress percent={Math.round(uploadProgress)} />
-                    )}
                 </Form.Item>
+                {uploadProgress > 0 && (
+                    <Form.Item>
+                        <Progress percent={Math.round(uploadProgress)} />
+                    </Form.Item>
+                )}
                 <Form.Item
                     label="Ingredients"
                     name="ingredients"

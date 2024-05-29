@@ -6,6 +6,7 @@ const useEditProduct = () => {
     const [desserts, setDesserts] = useState([]);
     const [meals, setMeals] = useState([]);
     const db = firebase.firestore();
+    const storage = firebase.storage();
 
     const fetchProducts = async () => {
         const beveragesDoc = await db
@@ -42,7 +43,7 @@ const useEditProduct = () => {
         fetchProducts();
     }, []);
 
-    const editProduct = async (category, updatedProduct) => {
+    const editProduct = async (category, updatedProduct, file) => {
         const productRef = db
             .collection("restaurant")
             .doc("001")
@@ -55,16 +56,25 @@ const useEditProduct = () => {
         if (doc.exists) {
             let products = doc.data().items;
 
-            // Güncellenmek istenen ürünü bull
+            // Güncellenmek istenen ürünü bul
             let productToUpdate = products.find(
                 (p) => p.productID === updatedProduct.productID
             );
 
             if (productToUpdate) {
-                // Güncelleme işlemi
+                // Eğer yeni bir dosya varsa
+                if (file) {
+                    const storageRef = storage.ref();
+                    const categoryRef = storageRef.child(`${category}/${file.name}`);
+                    await categoryRef.put(file);
+                    const downloadURL = await categoryRef.getDownloadURL();
+                    updatedProduct.imageUrl = downloadURL;
+                }
 
+                // Ürün bilgilerini güncelle
                 Object.assign(productToUpdate, updatedProduct);
 
+                // Firestore'a güncellenmiş ürün bilgilerini ve yeni resmi kaydet
                 await productRef.update({ items: products });
                 await fetchProducts();
             }
@@ -85,7 +95,11 @@ const useEditProduct = () => {
             let products = doc.data().items;
             products = products.filter((p) => p.productID !== product.productID);
             await productRef.update({ items: products });
-            await fetchProducts(); // Update the product list after deleting
+            await fetchProducts(); // Ürün silindikten sonra ürün listesini güncelle
+
+            // Resmi sil
+            const imageRef = storage.refFromURL(product.imageUrl);
+            await imageRef.delete();
         }
     };
 

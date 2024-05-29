@@ -1,7 +1,8 @@
 import React, { useContext, useState } from "react";
 import useEditProduct from "../../hooks/useEditProduct";
 import { AuthContext } from '../../context/AuthContext';
-import { Modal, Button, Form, Input, Table, Typography, Select, Space, Image, message } from 'antd';
+import { Modal, Button, Form, Input, Table, Typography, Select, Space, Image, message, Upload, Progress } from 'antd';
+import { UploadOutlined } from '@ant-design/icons';
 
 const { Title } = Typography;
 const { Option } = Select;
@@ -13,15 +14,13 @@ const EditProduct = () => {
     const [editingCategory, setEditingCategory] = useState(null);
     const [selectedCategory, setSelectedCategory] = useState("");
     const { user } = useContext(AuthContext);
+    const [fileList, setFileList] = useState([]);
+    const [uploadProgress, setUploadProgress] = useState(0);
 
     const handleEdit = (category, product) => {
         setEditingProduct({ ...product });
         setEditingCategory(category);
     };
-
-    if (!user) {
-        return <div>Kullanıcı giriş yapmadı. Ürün eklemek için giriş yapmalısınız.</div>;
-    }
 
     const handleSave = async () => {
         if (editingProduct && editingCategory) {
@@ -30,7 +29,8 @@ const EditProduct = () => {
                     ...editingProduct,
                     price: parseFloat(editingProduct.price)
                 };
-                await editProduct(editingCategory, updatedProduct);
+                const file = fileList[0]?.originFileObj; // Kullanıcının yüklediği dosyayı al
+                await editProduct(editingCategory, updatedProduct, file); // Dosyayı editProduct fonksiyonuna geç
                 setEditingProduct(null);
                 setEditingCategory(null);
                 message.success("Ürün başarıyla güncellendi");
@@ -63,10 +63,19 @@ const EditProduct = () => {
     const handleCategoryChange = (category) => {
         setSelectedCategory(category);
     };
+
+    const handleFileChange = (info) => {
+        setFileList(info.fileList);
+    };
+
     const handleCancel = () => {
         setEditingProduct(null);
         setEditingCategory(null);
     };
+
+    if (!user) {
+        return <div>Kullanıcı giriş yapmadı. Ürün eklemek için giriş yapmalısınız.</div>;
+    }
 
     return (
         <div className="edit-product-container">
@@ -93,16 +102,22 @@ const EditProduct = () => {
                                 }
                             />
                         </Form.Item>
-                        <Form.Item label="Resim URL">
-                            <Input
-                                value={editingProduct.imageUrl}
-                                onChange={(e) =>
-                                    setEditingProduct({
-                                        ...editingProduct,
-                                        imageUrl: e.target.value,
-                                    })
-                                }
-                            />
+                        <Form.Item label="Resim">
+                            <Upload
+                                name="image"
+                                listType="picture"
+                                beforeUpload={() => false}
+                                onChange={handleFileChange}
+                                fileList={fileList}
+                            >
+                                <Button icon={<UploadOutlined />}>Resim Değiştir</Button>
+                            </Upload>
+                            {uploadProgress > 0 && (
+                                <Progress percent={Math.round(uploadProgress)} />
+                            )}
+                            {editingProduct && editingProduct.imageUrl && (
+                                <img src={editingProduct.imageUrl} alt="current" style={{ width: '100px', height: '100px', marginTop: '10px' }} />
+                            )}
                         </Form.Item>
                         <Form.Item label="Malzemeler">
                             <Input
@@ -163,7 +178,7 @@ const EditProduct = () => {
                                 <Table.Column title="Product Name" dataIndex="name" key="name" />
                                 <Table.Column title="Description" dataIndex="description" key="description" />
                                 <Table.Column
-                                    title="Resim"
+                                    title="Image"
                                     dataIndex="imageUrl"
                                     key="imageUrl"
                                     render={(text, record) => (

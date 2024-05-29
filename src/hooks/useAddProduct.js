@@ -1,4 +1,4 @@
-import { useState, useContext, useEffect } from "react";
+import { useState, useContext } from "react";
 import firebase from "firebase/app";
 import "firebase/storage";
 import "firebase/firestore";
@@ -29,7 +29,7 @@ const useAddProduct = () => {
         return maxProductID;
     };
 
-    const handleImageUpload = (file, onProgress) => {
+    const handleImageUpload = (file, category, onProgress) => {
         return new Promise((resolve, reject) => {
             const storageRef = storage.ref();
             const categoryRef = storageRef.child(`${category}/${file.name}`);
@@ -44,16 +44,18 @@ const useAddProduct = () => {
                 (error) => {
                     reject(error);
                 },
-                () => {
-                    uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
-                        resolve(downloadURL);
-                    });
+                async () => {
+                    const downloadURL = await uploadTask.snapshot.ref.getDownloadURL();
+                    const metadata = await uploadTask.snapshot.ref.getMetadata();
+                    const token = metadata.customMetadata && metadata.customMetadata.token;
+                    const imageUrlWithToken = token ? `${downloadURL}?token=${token}` : downloadURL;
+                    resolve(imageUrlWithToken);
                 }
             );
         });
     };
 
-    const addProduct = async () => {
+    const addProduct = async (imageUrl) => {
         if (!user) {
             toast.error("Kullanıcı giriş yapmadı. Ürün eklemek için giriş yapmalısınız.");
             return;
@@ -89,12 +91,7 @@ const useAddProduct = () => {
                 });
             }
 
-            setName("");
-            setDescription("");
-            setImageUrl("");
-            setIngredients("");
-            setPrice(0);
-            setCategory("beverages");
+            resetForm();
         } catch (error) {
             console.error("Ürün eklenirken bir hata oluştu: ", error);
         }
