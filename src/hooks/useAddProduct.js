@@ -1,18 +1,20 @@
 import { useState, useContext, useEffect } from "react";
-import firebase from "firebase";
+import firebase from "firebase/app";
+import "firebase/storage";
+import "firebase/firestore";
 import { AuthContext } from "../context/AuthContext";
 import toast from "react-hot-toast";
 
 const useAddProduct = () => {
     const { user } = useContext(AuthContext);
     const [name, setName] = useState("");
-    const [productID, setProductID] = useState("");
     const [description, setDescription] = useState("");
     const [imageUrl, setImageUrl] = useState("");
     const [ingredients, setIngredients] = useState("");
     const [price, setPrice] = useState(0);
     const [category, setCategory] = useState("beverages");
     const db = firebase.firestore();
+    const storage = firebase.storage();
 
     const getMaxProductID = async (categoryRef) => {
         const snapshot = await categoryRef.get();
@@ -27,11 +29,33 @@ const useAddProduct = () => {
         return maxProductID;
     };
 
+    const handleImageUpload = (file, onProgress) => {
+        return new Promise((resolve, reject) => {
+            const storageRef = storage.ref();
+            const categoryRef = storageRef.child(`${category}/${file.name}`);
+            const uploadTask = categoryRef.put(file);
+
+            uploadTask.on(
+                "state_changed",
+                (snapshot) => {
+                    const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                    onProgress(progress);
+                },
+                (error) => {
+                    reject(error);
+                },
+                () => {
+                    uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
+                        resolve(downloadURL);
+                    });
+                }
+            );
+        });
+    };
+
     const addProduct = async () => {
         if (!user) {
-            toast.error(
-                "Kullanıcı giriş yapmadı. Ürün eklemek için giriş yapmalısınız."
-            );
+            toast.error("Kullanıcı giriş yapmadı. Ürün eklemek için giriş yapmalısınız.");
             return;
         }
 
@@ -52,7 +76,7 @@ const useAddProduct = () => {
                 imageUrl,
                 ingredients,
                 price: Number(price),
-                productID: newProductID.toString(), // productID as string
+                productID: newProductID.toString(),
             };
 
             const doc = await categoryRef.get();
@@ -70,20 +94,31 @@ const useAddProduct = () => {
             setImageUrl("");
             setIngredients("");
             setPrice(0);
-            setCategory("beveragess");
+            setCategory("beverages");
         } catch (error) {
             console.error("Ürün eklenirken bir hata oluştu: ", error);
         }
     };
 
+    const resetForm = () => {
+        setName("");
+        setDescription("");
+        setImageUrl("");
+        setIngredients("");
+        setPrice(0);
+        setCategory("beverages");
+    };
+
     return {
         addProduct,
+        handleImageUpload,
         setName,
         setDescription,
         setImageUrl,
         setIngredients,
         setPrice,
         setCategory,
+        resetForm,
     };
 };
 

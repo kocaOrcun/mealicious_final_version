@@ -1,0 +1,23 @@
+.forgot-password {
+    margin-top: 10px;
+    text-align: right;
+}
+
+.btn-link {
+    background: none;
+    border: none;
+    color: #007bff;
+    text-decoration: underline;
+    cursor: pointer;
+    font-size: 0.9rem;
+    padding: 0;
+}
+
+.btn-link:focus {
+    outline: none;
+}
+
+.btn-link:hover {
+    text-decoration: none;
+    color: #0056b3;
+}

@@ -72,7 +72,7 @@ const EditProduct = () => {
         <div className="edit-product-container">
             {editingProduct ? (
                 <div>
-                    <Title level={2}>Ürünü Düzenle</Title>
+                    <Title level={2}>Edit Product</Title>
                     <Form layout="vertical">
                         <Form.Item label="Ad">
                             <Input
@@ -117,6 +117,9 @@ const EditProduct = () => {
                         </Form.Item>
                         <Form.Item label="Fiyat">
                             <Input
+                                type="number"
+                                min="0"
+                                step="0.01"
                                 value={editingProduct.price}
                                 onChange={(e) =>
                                     setEditingProduct({
@@ -136,7 +139,7 @@ const EditProduct = () => {
                 </div>
             ) : (
                 <>
-                    <Title level={2}>Kategori Seçin:</Title>
+                    <Title level={2}>Choose Category:</Title>
                     <Space>
                         {["beverages", "desserts", "meals"].map((category, index) => (
                             <Button key={index} onClick={() => handleCategoryChange(category)}>
@@ -157,8 +160,8 @@ const EditProduct = () => {
                                 }
                                 rowKey="name"
                             >
-                                <Table.Column title="Ad" dataIndex="name" key="name" />
-                                <Table.Column title="Açıklama" dataIndex="description" key="description" />
+                                <Table.Column title="Product Name" dataIndex="name" key="name" />
+                                <Table.Column title="Description" dataIndex="description" key="description" />
                                 <Table.Column
                                     title="Resim"
                                     dataIndex="imageUrl"
@@ -172,18 +175,18 @@ const EditProduct = () => {
                                         />
                                     )}
                                 />
-                                <Table.Column title="Malzemeler" dataIndex="ingredients" key="ingredients" />
-                                <Table.Column title="Fiyat" dataIndex="price" key="price" />
+                                <Table.Column title="Ingredients" dataIndex="ingredients" key="ingredients" />
+                                <Table.Column title="Price" dataIndex="price" key="price" />
                                 <Table.Column
-                                    title="Aksiyonlar"
+                                    title="Actions"
                                     key="actions"
                                     render={(text, record) => (
                                         <Space>
                                             <Button onClick={() => handleEdit(selectedCategory, { ...record })}>
-                                                Düzenle
+                                                Edit
                                             </Button>
                                             <Button onClick={() => handleDelete(selectedCategory, { ...record })} danger>
-                                                Sil
+                                                Delete
                                             </Button>
                                         </Space>
                                     )}

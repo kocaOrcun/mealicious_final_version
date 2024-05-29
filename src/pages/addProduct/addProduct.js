@@ -1,5 +1,6 @@
-import React, { useContext } from 'react';
-import { Form, Input, Button, Select, message, Typography } from 'antd';
+import React, { useContext, useState } from 'react';
+import { Form, Input, Button, Select, message, Typography, Upload, Progress } from 'antd';
+import { UploadOutlined } from '@ant-design/icons';
 import useAddProduct from '../../hooks/useAddProduct';
 import { AuthContext } from '../../context/AuthContext';
 import './addProduct.css';
@@ -10,13 +11,41 @@ const { Title } = Typography;
 
 const AddProduct = () => {
     const { user } = useContext(AuthContext);
-    const { name, setName, description, setDescription, imageUrl, setImageUrl, ingredients, setIngredients, price, setPrice, addProduct, category, setCategory, resetForm } = useAddProduct();
+    const {
+        name, setName,
+        description, setDescription,
+        imageUrl, setImageUrl,
+        ingredients, setIngredients,
+        price, setPrice,
+        addProduct, category, setCategory,
+        resetForm, handleImageUpload
+    } = useAddProduct();
+    const [file, setFile] = useState(null);
+    const [uploadProgress, setUploadProgress] = useState(0);
     const history = useHistory();
-    const handleSubmit = () => {
-        addProduct();
-        message.success('Ürün başarıyla eklendi!');
-        resetForm();
-        history.push('/addProduct'); // Kullanıcıyı 'addProduct' sayfasına yönlendirir
+
+    const handleSubmit = async () => {
+        if (file) {
+            try {
+                const uploadedImageUrl = await handleImageUpload(file, setUploadProgress);
+                setImageUrl(uploadedImageUrl);
+                await addProduct();
+                message.success('Ürün başarıyla eklendi!');
+                resetForm();
+                setUploadProgress(0);
+                history.push('/addProduct');
+            } catch (error) {
+                message.error('Resim yüklenirken bir hata oluştu.');
+            }
+        } else {
+            message.error('Lütfen bir resim yükleyin.');
+        }
+    };
+
+    const handleFileChange = (info) => {
+        if (info.file.status === 'done' || info.file.status === 'uploading') {
+            setFile(info.file.originFileObj);
+        }
     };
 
     if (!user) {
@@ -25,14 +54,14 @@ const AddProduct = () => {
 
     return (
         <div className="add-product-container">
-            <Title level={2}>Ürün Ekle</Title>
+            <Title level={2}>Add Product</Title>
             <Form
                 onFinish={handleSubmit}
                 layout="vertical"
                 className="add-product-form"
             >
                 <Form.Item
-                    label="Kategori"
+                    label="Category"
                     name="category"
                     rules={[{ required: true, message: 'Lütfen bir kategori seçin!' }]}
                 >
@@ -43,35 +72,44 @@ const AddProduct = () => {
                     </Select>
                 </Form.Item>
                 <Form.Item
-                    label="Ürün Adı"
+                    label="Product Name"
                     name="name"
                     rules={[{ required: true, message: 'Lütfen ürün adını girin!' }]}
                 >
                     <Input value={name} onChange={(e) => setName(e.target.value)} />
                 </Form.Item>
                 <Form.Item
-                    label="Açıklama"
+                    label="Description"
                     name="description"
                     rules={[{ required: true, message: 'Lütfen açıklama girin!' }]}
                 >
                     <Input value={description} onChange={(e) => setDescription(e.target.value)} />
                 </Form.Item>
                 <Form.Item
-                    label="Resim URL"
-                    name="imageUrl"
-                    rules={[{ required: true, message: "Lütfen resim URL'sini girin!" }]}
+                    label="Upload Image"
+                    name="image"
                 >
-                    <Input value={imageUrl} onChange={(e) => setImageUrl(e.target.value)} />
+                    <Upload
+                        name="image"
+                        listType="picture"
+                        beforeUpload={() => false}
+                        onChange={handleFileChange}
+                    >
+                        <Button icon={<UploadOutlined />}>Choose Image</Button>
+                    </Upload>
+                    {uploadProgress > 0 && (
+                        <Progress percent={Math.round(uploadProgress)} />
+                    )}
                 </Form.Item>
                 <Form.Item
-                    label="İçerik"
+                    label="Ingredients"
                     name="ingredients"
                     rules={[{ required: true, message: 'Lütfen içerik girin!' }]}
                 >
                     <Input value={ingredients} onChange={(e) => setIngredients(e.target.value)} />
                 </Form.Item>
                 <Form.Item
-                    label="Fiyat"
+                    label="Price"
                     name="price"
                     rules={[{ required: true, message: 'Lütfen fiyatı girin!' }]}
                 >
@@ -79,7 +117,7 @@ const AddProduct = () => {
                 </Form.Item>
                 <Form.Item>
                     <Button type="primary" htmlType="submit">
-                        Ekle
+                        Add
                     </Button>
                 </Form.Item>
             </Form>

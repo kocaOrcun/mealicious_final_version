@@ -11,16 +11,10 @@ export default function Sidebar() {
       <div className="sidebar">
         <div className="sidebar-content">
           <div className="user">
-            <p>'Welcome'{user ? user.email :''}</p> {/* restaurantName değerini göster veya placeholder metin göster */}
+            <p>'MLC'</p> {/* restaurantName değerini göster veya placeholder metin göster */}
           </div>
           <nav className="links">
             <ul>
-              <li>
-                <NavLink to="/dashboard">
-                  <img src={DashboardIcon} alt="Icon"/>
-                  <span>Dashboard</span>
-                </NavLink>
-              </li>
               <li>
                 <NavLink to="/orders">
                   <img src={AddIcon} alt="Icon"/>

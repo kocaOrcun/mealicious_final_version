@@ -1,15 +1,26 @@
 import { useState } from 'react'
 import { useLogin } from '../../hooks/useLogin'
+import { useResetPassword } from '../../hooks/useResetPassword'
+import toast from 'react-hot-toast'
 import './Login.css'
 
 export default function Login() {
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const { login, error, isPending } = useLogin()
+    const { resetPassword, isPending: isResetPending, error: resetError } = useResetPassword()
 
     const handleSubmit = async (e) => {
         e.preventDefault()
         login(email, password)
+    }
+
+    const handleResetPassword = async () => {
+        if (email) {
+            resetPassword(email)
+        } else {
+            toast.error("Please enter your email address")
+        }
     }
 
     return (
@@ -36,6 +47,13 @@ export default function Login() {
             {!isPending && <button className="btn">Log in</button>}
             {isPending && <button className="btn" disabled>loading</button>}
             {error && <div className="error">{error}</div>}
+            <div className="forgot-password">
+                <button type="button" className="btn-link" onClick={handleResetPassword}>
+                    Forgot Password?
+                </button>
+                {isResetPending && <span>Sending reset email...</span>}
+                {resetError && <div className="error">{resetError}</div>}
+            </div>
         </form>
     )
 }
