@@ -5,7 +5,6 @@ import useAddProduct from '../../hooks/useAddProduct';
 import { AuthContext } from '../../context/AuthContext';
 import './addProduct.css';
 import { useHistory } from 'react-router-dom';
-import firebase from 'firebase/app';
 import 'firebase/storage'; // Firebase Storage modülünü dahil edin
 
 const { Option } = Select;
@@ -36,7 +35,7 @@ const AddProduct = () => {
                 resetForm();
                 setUploadProgress(0);
                 setFileList([]);
-                history.push('/'); // Ürün eklemeden sonra ana sayfaya yönlendirme
+                history.push('/editProduct'); // Ürün eklemeden sonra ana sayfaya yönlendirme
             } catch (error) {
                 message.error('Resim yüklenirken bir hata oluştu.');
             }

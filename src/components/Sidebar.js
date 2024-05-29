@@ -1,10 +1,9 @@
 import { NavLink } from "react-router-dom";
-import { useAuthContext } from '../hooks/useAuthContext'
 import "./Sidebar.css";
 import {PlusOutlined, EditOutlined, ShopOutlined } from '@ant-design/icons';
 
 export default function Sidebar() {
-  const { user } = useAuthContext()
+
 
   return (
       <div className="sidebar">
