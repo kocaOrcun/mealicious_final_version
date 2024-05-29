@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { Table, Checkbox, Button, Select, Spin, Typography, message } from 'antd';
 import useOrders from '../../hooks/useOrders';
+import { Link } from 'react-router-dom';
 import { AuthContext } from '../../context/AuthContext';
 import firebase from 'firebase/app';
 import 'firebase/firestore';
@@ -170,6 +171,10 @@ const Orders = () => {
             title: 'Price',
             dataIndex: 'total',
         },
+        {
+            title: 'Notes',
+            dataIndex: 'notes',
+        },
     ];
 
     return (
@@ -195,8 +200,8 @@ const Orders = () => {
                 dataSource={filteredOrders}
                 columns={columns}
                 rowKey="id"
-                pagination={false}
-                rowClassName={record => record.status === 0 && Date.now() - record.timestamp < 30000 ? 'highlight' : ''}
+                pagination={{ pageSize: 20 }}
+                rowClassName={(record, index) => index % 2 === 0 ? 'table-row-light' : ''}
             />
         </div>
     );

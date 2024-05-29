@@ -43,3 +43,6 @@ select {
     height: 35px;
     margin-right: 10px;
 }
+.table-row-light {
+    background-color: #f5f5f5; /* Gri renk */
+}

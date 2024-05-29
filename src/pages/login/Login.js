@@ -9,7 +9,7 @@ export default function Login() {
     const [password, setPassword] = useState('')
     const { login, error, isPending } = useLogin()
     const { resetPassword, isPending: isResetPending, error: resetError } = useResetPassword()
-
+    const year = new Date().getFullYear();
     const handleSubmit = async (e) => {
         e.preventDefault()
         login(email, password)
@@ -53,6 +53,20 @@ export default function Login() {
                 </button>
                 {isResetPending && <span>Sending reset email...</span>}
                 {resetError && <div className="error">{resetError}</div>}
+            </div>
+            <div>
+                <footer style={{
+                    position: 'fixed',
+                    left: 0,
+                    bottom: 0,
+                    width: '100%',
+                    backgroundColor: '#f8f9fa',
+                    color: 'black',
+                    textAlign: 'center',
+                    padding: '10px 0'
+                }}>
+                    <p>© {year} Mealicious</p>
+                </footer>
             </div>
         </form>
     )

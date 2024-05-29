@@ -1,32 +1,31 @@
 import { NavLink } from "react-router-dom";
-import { useAuthContext } from '../hooks/useAuthContext' // useAuthContext hook'unu import edin
+import { useAuthContext } from '../hooks/useAuthContext'
 import "./Sidebar.css";
-import DashboardIcon from '../assets/dashboard_icon.svg';
-import AddIcon from '../assets/add_icon.svg';
+import {PlusOutlined, EditOutlined, ShopOutlined } from '@ant-design/icons';
 
 export default function Sidebar() {
-  const { user } = useAuthContext() // useAuthContext hook'unu kullanarak mevcut kullanıcıyı alın
+  const { user } = useAuthContext()
 
   return (
       <div className="sidebar">
         <div className="sidebar-content">
           <div className="user">
-            <p>'MLC'</p> {/* restaurantName değerini göster veya placeholder metin göster */}
+            <p>MLC</p>
           </div>
           <nav className="links">
             <ul>
               <li>
                 <NavLink to="/orders">
-                  <img src={AddIcon} alt="Icon"/>
-                  <span>Orders</span>
+                  <ShopOutlined />
+                  <span> Orders</span>
                 </NavLink>
                 <NavLink to="/addProduct">
-                  <img src={AddIcon} alt="Icon"/>
-                  <span>Add Product</span>
+                  <PlusOutlined />
+                  <span> Add Product</span>
                 </NavLink>
                 <NavLink to="/editProduct">
-                  <img src={AddIcon} alt="Icon"/>
-                  <span>Edit Product</span>
+                  <EditOutlined />
+                  <span> Edit Product</span>
                 </NavLink>
               </li>
             </ul>

@@ -16,10 +16,22 @@ const EditProduct = () => {
     const { user } = useContext(AuthContext);
     const [fileList, setFileList] = useState([]);
     const [uploadProgress, setUploadProgress] = useState(0);
+    const [isModalVisible, setIsModalVisible] = useState(false);
+
+    const showModal = () => {
+        setIsModalVisible(true);
+    };
+
+    const handleCancel = () => {
+        setIsModalVisible(false);
+        setEditingProduct(null);
+        setEditingCategory(null);
+    };
 
     const handleEdit = (category, product) => {
         setEditingProduct({ ...product });
         setEditingCategory(category);
+        showModal();
     };
 
     const handleSave = async () => {
@@ -29,32 +41,33 @@ const EditProduct = () => {
                     ...editingProduct,
                     price: parseFloat(editingProduct.price)
                 };
-                const file = fileList[0]?.originFileObj; // Kullanıcının yüklediği dosyayı al
-                await editProduct(editingCategory, updatedProduct, file); // Dosyayı editProduct fonksiyonuna geç
+                const file = fileList[0]?.originFileObj; // Get the file uploaded by the user
+                await editProduct(editingCategory, updatedProduct, file); // Pass the file to the editProduct function
                 setEditingProduct(null);
                 setEditingCategory(null);
-                message.success("Ürün başarıyla güncellendi");
+                setIsModalVisible(false);
+                message.success("Product updated successfully");
             } catch (error) {
                 console.error("Failed to edit product: ", error);
-                message.error("Ürün güncelleme başarısız oldu");
+                message.error("Product update failed");
             }
         }
     };
 
     const handleDelete = (category, product) => {
         Modal.confirm({
-            title: 'Ürünü silmek istediğinize emin misiniz?',
-            content: 'Bu işlem geri alınamaz.',
-            okText: 'Evet',
+            title: 'Are you sure you want to delete this product?',
+            content: 'This action cannot be undone.',
+            okText: 'Yes',
             okType: 'danger',
-            cancelText: 'Hayır',
+            cancelText: 'No',
             onOk: async () => {
                 try {
                     await deleteProduct(category, { ...product });
-                    message.success("Ürün başarıyla silindi");
+                    message.success("Product deleted successfully");
                 } catch (error) {
                     console.error("Failed to delete product: ", error);
-                    message.error("Ürün silme başarısız oldu");
+                    message.error("Product deletion failed");
                 }
             },
         });
@@ -68,22 +81,16 @@ const EditProduct = () => {
         setFileList(info.fileList);
     };
 
-    const handleCancel = () => {
-        setEditingProduct(null);
-        setEditingCategory(null);
-    };
-
     if (!user) {
         return <div>Kullanıcı giriş yapmadı. Ürün eklemek için giriş yapmalısınız.</div>;
     }
 
     return (
         <div className="edit-product-container">
-            {editingProduct ? (
-                <div>
-                    <Title level={2}>Edit Product</Title>
+            <Modal title="Edit Product" visible={isModalVisible} onCancel={handleCancel} footer={null}>
+                {editingProduct && (
                     <Form layout="vertical">
-                        <Form.Item label="Ad">
+                        <Form.Item label="Prooduct Name">
                             <Input
                                 value={editingProduct.name}
                                 onChange={(e) =>
@@ -91,8 +98,8 @@ const EditProduct = () => {
                                 }
                             />
                         </Form.Item>
-                        <Form.Item label="Açıklama">
-                            <Input
+                        <Form.Item label="Description">
+                            <Input.TextArea
                                 value={editingProduct.description}
                                 onChange={(e) =>
                                     setEditingProduct({
@@ -102,7 +109,7 @@ const EditProduct = () => {
                                 }
                             />
                         </Form.Item>
-                        <Form.Item label="Resim">
+                        <Form.Item label="Image">
                             <Upload
                                 name="image"
                                 listType="picture"
@@ -110,7 +117,7 @@ const EditProduct = () => {
                                 onChange={handleFileChange}
                                 fileList={fileList}
                             >
-                                <Button icon={<UploadOutlined />}>Resim Değiştir</Button>
+                                <Button icon={<UploadOutlined />}>Change Image</Button>
                             </Upload>
                             {uploadProgress > 0 && (
                                 <Progress percent={Math.round(uploadProgress)} />
@@ -119,8 +126,8 @@ const EditProduct = () => {
                                 <img src={editingProduct.imageUrl} alt="current" style={{ width: '100px', height: '100px', marginTop: '10px' }} />
                             )}
                         </Form.Item>
-                        <Form.Item label="Malzemeler">
-                            <Input
+                        <Form.Item label="Ingredients">
+                            <Input.TextArea
                                 value={editingProduct.ingredients}
                                 onChange={(e) =>
                                     setEditingProduct({
@@ -130,7 +137,7 @@ const EditProduct = () => {
                                 }
                             />
                         </Form.Item>
-                        <Form.Item label="Fiyat">
+                        <Form.Item label="Price">
                             <Input
                                 type="number"
                                 min="0"
@@ -145,14 +152,15 @@ const EditProduct = () => {
                             />
                         </Form.Item>
                         <Button type="primary" onClick={handleSave}>
-                            Kaydet
+                            Save
                         </Button>
                         <Button onClick={handleCancel}>
-                            İptal
+                            Cancel
                         </Button>
                     </Form>
-                </div>
-            ) : (
+                )}
+            </Modal>
+            {!isModalVisible && (
                 <>
                     <Title level={2}>Choose Category:</Title>
                     <Space>

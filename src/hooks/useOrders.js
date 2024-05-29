@@ -34,6 +34,7 @@ const useOrders = () => {
                             status: orderData.status,
                             tableNo: orderData.tableNo,
                             total: orderData.total,
+                            notes: orderData.notes,
                             orders: orderData.orders, // Get all order items
                             timestamp: Date.now(), // Add a timestamp to each order
                         };

@@ -13,6 +13,7 @@
   width: inherit;
 }
 
+
 .sidebar .user {
   font-weight: bold;
   text-align: center;
@@ -53,3 +54,19 @@
 .sidebar .links .active img {
   filter: invert(40%);
 }
+.sidebar .links a {
+  display: flex;
+  padding: 20px 50px; /* İkonlarla metinler arasına 20 piksel boşluk ekledik */
+  text-decoration: none;
+  width: 100%;
+  color: #fff;
+  box-sizing: border-box;
+  background: var(--bg-color);
+  border-radius: 20px 0 0 20px;
+}
+
+.sidebar .links img {
+  margin-right: 10px;
+  filter: invert(100%);
+}
+
